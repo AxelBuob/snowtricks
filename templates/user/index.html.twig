@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block body %}
+
+    
+    <h1>Mon compte</h1>
+    <p>Inscris depuis le {{ user.createdAt | date('d/m/Y') }}</p>
+    
+    <h2>Mes informations</h2>
+    {{ form(form) }}
+    <hr>
+    <a href="{{ path('user_change_password') }}" class="btn btn-primary">Changer mon mot de passe</a>
+    <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target=".confirm-delete-modal">Supprimer mon compte</a>
+
+    <div class="modal fade confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Supprimer mon compte</h5>
+                    <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes vous certain de vouloir supprimer votre compte ?</p>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-secondary" data-bs-dismiss="modal">Fermer</a>
+                    <a href="{{ path('user_delete_account') }}" class="btn btn-danger confirm-delete-button">Supprimer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
