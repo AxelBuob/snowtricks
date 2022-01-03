@@ -111,3 +111,6 @@ Temporary Items
 /web/js/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,symfony
+
+# NodeJs
+node_modules
