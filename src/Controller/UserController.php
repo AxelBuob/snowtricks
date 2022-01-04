@@ -3,21 +3,23 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\User\ChangePasswordType;
+use App\Form\User\ChangePassWordType;
 use App\Form\User\UserInformationType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class UserController extends AbstractController
 {
-    #[Route('/mon-compte', name: 'user_account')]
+    #[Route('/mon-compte', name: 'user_account'), IsGranted(['ROLE_USER'])]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
@@ -55,37 +57,25 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_home');
     }
 
-    #[Route('/modifier-mon-mot-de-passe', name: 'user_change_password')]
-    public function changeUserPassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
+    #[Route('/modifier-mon-mot-de-passe', methods: ['GET', 'POST'], name: 'user_change_password')]
+    public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
-        if(!$this->getUser())
-        {
-            return $this->redirectToRoute('app_login');
-        }
-
         $user = $this->getUser();
-        $form = $this->createForm(ChangePasswordType::class, $user);
+        $form = $this->createForm(ChangePasswordType::class)->add('save', SubmitType::class, ['label' => 'Modifier mon mot de passe']);
         $form->handleRequest($request);
-
-        if($form->isSubmitted() && $form->isValid())
-        {
-            $new_password = $userPasswordHasher->hashPassword($user, $form->get('password')->getData());
-            $user->setPassword($new_password);
-            $entityManager->persist($user);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword($passwordHasher->hashPassword($user, $form->get('newPassword')->getData()));
             $entityManager->flush();
-
             $this->addFlash(
                 'success',
                 'Votre mot de passe a bien été mis à jour.'
             );
-
-            return $this->redirectToRoute('user_account');
+            return $this->redirectToRoute('app_logout');
         }
-
-        return $this->renderForm('user/changePassword.html.twig', [
-            'title' => 'Modifier mon mot de passe',
-            'user' => $user,
-            'form' => $form
+        return $this->render('user/changePassword.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
+
+
 }

@@ -43,7 +43,7 @@
                     </li>
                     {% endif %}
                 </ul>
-                {% if app.user %}
+                {% if is_granted('ROLE_USER') %}
                     <a href="{{ path("user_account") }}" class="btn btn-outline-success me-2" type="submit">Mon compte</a>
                     <a href="{{ path("app_logout") }}" class="btn btn-outline-success" type="submit">Déconnexion</a>
                 {% else %}
