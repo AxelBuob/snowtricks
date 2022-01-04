@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class UserController extends AbstractController
 {
-    #[Route('/mon-compte', name: 'user_account'), IsGranted(['ROLE_USER'])]
+    #[Route('/mon-compte', name: 'user_account'), IsGranted('ROLE_USER')]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
