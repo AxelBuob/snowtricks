@@ -12,16 +12,14 @@ use App\Entity\Image;
 use App\Entity\SiteConfiguration;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 
 class AppFixtures extends Fixture
 {
 
-    public function __construct(
-        private UserPasswordHasherInterface $passwordHasher,
-        private SluggerInterface $slugger)
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
     {
+        $this->userPasswordHasher = $userPasswordHasher;
     }
 
     public function load(ObjectManager $manager): void
@@ -62,7 +60,7 @@ class AppFixtures extends Fixture
             $user = new User();
             $user->setFirstname($firstname);
             $user->setLastname($lastname);
-            $user->setPassword($this->passwordHasher->hashPassword($user, $password));
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, $password));
             $user->setEmail($email);
             $user->setRoles($roles);
             $user->setCreatedAt(new \DateTime);
