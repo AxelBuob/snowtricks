@@ -49,7 +49,7 @@ class RegistrationFormType extends AbstractType
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'constraints' => [
-                    new Regex("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/", message: "Votre mot de passe doit contenir au minimum 8 caractères, dont une lettre et un chiffre")
+                    //new Regex("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/", message: "Votre mot de passe doit contenir au minimum 8 caractères, dont une lettre et un chiffre")
                 ],
                 'required' => true,
                 'invalid_message' => 'Les deux mots de passes ne sont pas identiques',
