@@ -19,13 +19,13 @@ class SiteConfiguration
     #[ORM\Column(type: 'string', length: 255)]
     private $description;
 
-    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private $author;
-
     #[ORM\OneToOne(targetEntity: Image::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private $image;
+
+    #[ORM\OneToOne(inversedBy: 'siteConfiguration', targetEntity: User::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private $user;
 
     public function getId(): ?int
     {
@@ -56,18 +56,6 @@ class SiteConfiguration
         return $this;
     }
 
-    public function getAuthor(): ?User
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(User $author): self
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
     public function getImage(): ?Image
     {
         return $this->image;
@@ -76,6 +64,18 @@ class SiteConfiguration
     public function setImage(Image $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

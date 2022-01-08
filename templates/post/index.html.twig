@@ -22,7 +22,7 @@
             <img class="card-img-top" src="https://picsum.photos/300/200" alt="Card image cap">
                 <div class="card-body d-flex flex-row justify-content-between">
                     <div>
-                        <h5 class="card-title"><a href="{{ path('post_show', {id: post.id, slug: post.slug}) }}">{{ post.name }}</a></h5>
+                        <h5 class="card-title"><a href="{{ path('post_show', {slug: post.slug}) }}">{{ post.name }}</a></h5>
                     </div>
                     <div>
                         <a href="#"><i class="fas fa-pencil-alt me-2"></i></a>

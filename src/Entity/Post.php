@@ -42,14 +42,11 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Comment::class, orphanRemoval: true)]
     private $comments;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
-    #[ORM\JoinColumn(nullable: false)]
-    private $author;
-
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Image::class, orphanRemoval: true)]
     private $images;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
+    #[ORM\JoinColumn(nullable: false)]
     private $user;
 
     public function __construct()
@@ -162,18 +159,6 @@ class Post
                 $comment->setPost(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getAuthor(): ?User
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(?User $author): self
-    {
-        $this->author = $author;
 
         return $this;
     }

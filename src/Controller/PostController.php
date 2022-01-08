@@ -14,8 +14,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 use App\Entity\Post;
 use App\Entity\Comment;
+use App\Entity\Image;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
+use Doctrine\ORM\Mapping\Entity;
 
 class PostController extends AbstractController
 {
@@ -37,26 +39,17 @@ class PostController extends AbstractController
     }
 
     #[
-        Route('/figure/{slug}-{id}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug'=>"[a-z0-9\-]*", 'id' => "[1-9]\d*"]),
-        Route('/figure/{slug}-{id}/page/{page}', methods: ['GET'], name: 'post_show_paginated', requirements: ['slug' => "[a-z0-9\-]*", 'id' => "[1-9]\d*", 'page'=> "[1-9]\d*"]), 
+        Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"]),
+        Route('/figure/{slug}/page/{page}', methods: ['GET'], name: 'post_show_paginated', requirements: ['slug' => "[a-z0-9\-]*", 'page'=> "[1-9]\d*"]), 
     ]
     #[Cache(smaxage: 10)]
-    public function show($id,  string $slug, int $page, PostRepository $postRepository, CommentRepository $commentRepository): Response
-    { 
-        $post = $postRepository->find($id);
-        $comments = $commentRepository->findLatest($id, $page);
+    public function show(Post $post, int $page, CommentRepository $commentRepository): Response
+    {
+        $comments = $commentRepository->findLatest($post->getId(), $page);
 
-        if(!$post)
+        if (!$post)
         {
             throw $this->createNotFoundException('Cette figure n\'éxiste pas');
-        }
-
-        if($post->getSlug() !== $slug)
-        {
-            return $this->redirectToRoute('post_show', [
-                'id' => $post->getId(),
-                'slug' => $post->getSlug()
-            ], 301);
         }
 
         return $this->render('post/show.html.twig', [
@@ -65,13 +58,12 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/comment/{postId}/new', methods: ['POST'], name: 'comment_new')]
+    #[Route('/comment/{slug}/new', methods: ['POST'], name: 'comment_new')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    #[ParamConverter('post', options: ['mapping' => ['postId' => 'id']])]
     public function commentNew(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
         $comment = new Comment();
-        $comment->setAuthor($this->getUser());
+        $comment->setUser($this->getUser());
         $post->addComment($comment);
 
         $form = $this->createForm(CommentType::class, $comment);

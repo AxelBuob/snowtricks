@@ -22,7 +22,7 @@
     <div>
 
     <div>
-        <p>Publié le <b>{{ post.createdAt | date("d M Y") }}</b> à <b>{{ post.createdAt | date('h:m') }}</b> par <em>{{ post.author.firstName }} {{ post.author.lastName }}</em> dans la catégorie <strong>{{ post.category.name }}</strong></p>
+        <p>Publié le <b>{{ post.createdAt | date("d M Y") }}</b> à <b>{{ post.createdAt | date('h:m') }}</b> par <em>{{ post.user.firstName }} {{ post.user.lastName }}</em> dans la catégorie <strong>{{ post.category.name }}</strong></p>
     </div>
 
     <hr>
@@ -55,7 +55,7 @@
                     <img src="https://via.placeholder.com/60x60" alt="" class="rounded-circle">
                     <blockquote class="blockquote mb-0 w-100">
                         <p>{{ comment.content }}</p>
-                        <footer class="blockquote-footer"><cite title="Source Title">par {{ comment.author.firstName ~ comment.author.lastName }}</cite></footer>
+                        <footer class="blockquote-footer"><cite title="Source Title">par {{ comment.user.firstName ~ ' ' ~ comment.user.lastName }}</cite></footer>
                     </blockquote>
                 </div>
             </div>

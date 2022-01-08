@@ -28,10 +28,6 @@ class Comment
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private $author;
-
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
     private $user;
 
     public function __construct()
@@ -88,18 +84,6 @@ class Comment
     public function setPost(?Post $post): self
     {
         $this->post = $post;
-
-        return $this;
-    }
-
-    public function getAuthor(): ?User
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(?User $author): self
-    {
-        $this->author = $author;
 
         return $this;
     }

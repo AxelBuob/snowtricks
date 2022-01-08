@@ -54,6 +54,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private $posts;
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: SiteConfiguration::class, cascade: ['persist', 'remove'])]
+    private $siteConfiguration;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -251,6 +254,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $post->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSiteConfiguration(): ?SiteConfiguration
+    {
+        return $this->siteConfiguration;
+    }
+
+    public function setSiteConfiguration(SiteConfiguration $siteConfiguration): self
+    {
+        // set the owning side of the relation if necessary
+        if ($siteConfiguration->getUser() !== $this) {
+            $siteConfiguration->setUser($this);
+        }
+
+        $this->siteConfiguration = $siteConfiguration;
 
         return $this;
     }
