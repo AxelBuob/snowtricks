@@ -1,0 +1,6 @@
+
+{{ form_start(form, {method: 'POST', action: path('comment_new', {'slug': post.slug})}) }}
+
+    {{ form_row(form.content) }}
+
+{{ form_end(form) }}

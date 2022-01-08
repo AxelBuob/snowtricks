@@ -12,14 +12,15 @@ use App\Entity\Image;
 use App\Entity\SiteConfiguration;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
 {
 
-    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher, SluggerInterface $slugger)
     {
         $this->userPasswordHasher = $userPasswordHasher;
+        $this->slugger = $slugger;
     }
 
     public function load(ObjectManager $manager): void
@@ -85,7 +86,7 @@ class AppFixtures extends Fixture
         $siteConfiguration = new SiteConfiguration();
         $siteConfiguration->setName('Snowtricks');
         $siteConfiguration->setDescription('Site communautaire Snowtricks');
-        $siteConfiguration->setAuthor($this->getReference('admin@snowtricks.fr'));
+        $siteConfiguration->setUser($this->getReference('admin@snowtricks.fr'));
         $siteConfiguration->setImage($this->getReference('logo.png'));
         $manager->persist($siteConfiguration);
         $manager->flush();
@@ -116,9 +117,9 @@ class AppFixtures extends Fixture
         {
             $post = new Post();
             $post->setName($posts[$i]['name']);
-            $post->setSlug($this->slugger->slug($posts[$i]['name']));
+            $post->setSlug($posts[$i]['slug']);
             $post->setDescription($posts[$i]['description']);
-            $post->setAuthor($this->getReference('admin@snowtricks.fr'));
+            $post->setUser($this->getReference('admin@snowtricks.fr'));
             $post->addImage($this->getReference('post.png'));
             if($i < 5)
             {
@@ -146,16 +147,16 @@ class AppFixtures extends Fixture
     public function getPostData(): array
     {
         return [
-            [ 'name' => 'Mute', 'description' => 'Saisie de la carre frontside de la planche entre les deux pieds avec la main avant' ],
-            [ 'name' => 'Sad', 'description' => 'Saisie de la carre backside de la planche, entre les deux pieds, avec la main avant' ],
-            [ 'name' => 'Indy', 'description' => 'Saisie de la carre frontside de la planche, entre les deux pieds, avec la main arrière'],
-            [ 'name' => 'Stalefish', 'description' => 'Saisie de la carre backside de la planche entre les deux pieds avec la main arrière'],
-            [ 'name' => 'Tail grab', 'description' => 'Saisie de la partie arrière de la planche, avec la main arrière'],
-            [ 'name' => '180', 'description' => 'Demi-tour, soit 180 degrés d\'angle'],
-            [ 'name' => '360', 'description' => 'Trois six pour un tour complet'],
-            [ 'name' => '540', 'description' => 'Cinq quatre pour un tour et demi'],
-            [ 'name' => '720', 'description' => 'Sept deux pour deux tours complets'],
-            [ 'name' => '900', 'description' => 'Deux tours et demi']
+            [ 'name' => 'Mute', 'slug' => 'mute', 'description' => 'Saisie de la carre frontside de la planche entre les deux pieds avec la main avant' ],
+            [ 'name' => 'Sad', 'slug' => 'sad', 'description' => 'Saisie de la carre backside de la planche, entre les deux pieds, avec la main avant' ],
+            [ 'name' => 'Indy', 'slug' => 'indy', 'description' => 'Saisie de la carre frontside de la planche, entre les deux pieds, avec la main arrière'],
+            [ 'name' => 'Stalefish', 'slug' => 'stalefish', 'description' => 'Saisie de la carre backside de la planche entre les deux pieds avec la main arrière'],
+            [ 'name' => 'Tail grab', 'slug' => 'tail-grab', 'description' => 'Saisie de la partie arrière de la planche, avec la main arrière'],
+            [ 'name' => '180', 'slug' => '180', 'description' => 'Demi-tour, soit 180 degrés d\'angle'],
+            [ 'name' => '360', 'slug' => '360', 'description' => 'Trois six pour un tour complet'],
+            [ 'name' => '540', 'slug' => '540', 'description' => 'Cinq quatre pour un tour et demi'],
+            [ 'name' => '720', 'slug' => '720', 'description' => 'Sept deux pour deux tours complets'],
+            [ 'name' => '900', 'slug' => '900', 'description' => 'Deux tours et demi']
             
         ];
     }
