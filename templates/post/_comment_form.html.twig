@@ -1,0 +1,6 @@
+
+{{ form_start(form, {method: 'POST', action: path('comment_new', {'postId': post.id})}) }}
+
+    {{ form_row(form.content) }}
+
+{{ form_end(form) }}

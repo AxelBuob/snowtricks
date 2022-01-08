@@ -12,14 +12,15 @@ use App\Entity\Image;
 use App\Entity\SiteConfiguration;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
 {
 
-    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher, SluggerInterface $slugger)
     {
         $this->userPasswordHasher = $userPasswordHasher;
+        $this->slugger = $slugger;
     }
 
     public function load(ObjectManager $manager): void

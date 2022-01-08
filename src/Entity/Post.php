@@ -8,6 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\VarDumper\Cloner\Data;
 
+/**
+ * @UniqueEntity(fields={"name"}, message="Il y a déjà une figure avec ce nom")
+ */
+
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
@@ -44,6 +48,9 @@ class Post
 
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Image::class, orphanRemoval: true)]
     private $images;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
+    private $user;
 
     public function __construct()
     {
@@ -197,6 +204,18 @@ class Post
                 $image->setPost(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

@@ -4,15 +4,17 @@
 
 {% block body %}
 
-    
-    <h1>Mon compte</h1>
-    <p>Inscris depuis le {{ user.createdAt | date('d/m/Y') }}</p>
-    
-    <h2>Mes informations</h2>
-    {{ form(form) }}
-    <hr>
-    <a href="{{ path('user_change_password') }}" class="btn btn-primary">Changer mon mot de passe</a>
-    <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target=".confirm-delete-modal">Supprimer mon compte</a>
+<div class="container py-5">
+    <div class="w-100">
+        <h1>Mon compte</h1>
+        <p>Inscris depuis le {{ user.createdAt | date('d/m/Y') }}</p>
+        
+        <h2>Mes informations</h2>
+        {{ form(form) }}
+        <hr>
+        <a href="{{ path('user_change_password') }}" class="btn btn-primary">Changer mon mot de passe</a>
+        <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target=".confirm-delete-modal">Supprimer mon compte</a>
+    </div>
 
     <div class="modal fade confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -31,6 +33,9 @@
             </div>
         </div>
     </div>
+</div>
+    
+    
 
 {% endblock %}
 

@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Comment;
+use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Pagination\Paginator;
 
 /**
  * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,6 +21,15 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
+    public function findLatest(int $id, int $page = 1): Paginator
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.post = :id')
+            ->setParameter('id', $id)
+            ->orderBy('c.createdAt', 'DESC')
+        ;
+        return (new Paginator($qb))->paginate($page);
+    }
     // /**
     //  * @return Comment[] Returns an array of Comment objects
     //  */

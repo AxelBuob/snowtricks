@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Pagination\Paginator;
 
 /**
  * @method Post|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,6 +19,29 @@ class PostRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Post::class);
     }
+
+
+    public function findLatestWithFeaturedImage()
+    {
+        return $this->createQueryBuilder(alias: 'p')
+                    ->leftJoin('p.images', 'i')
+                    ->addSelect('i')
+                    //->andWhere('i.featured = true')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function findLatest(int $page = 1): Paginator
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.createdAt <= :now')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setParameter('now', new \DateTime());
+
+        return (new Paginator($qb))->paginate($page);
+    }
+
+
 
     // /**
     //  * @return Post[] Returns an array of Post objects

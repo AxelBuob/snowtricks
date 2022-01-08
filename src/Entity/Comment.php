@@ -30,6 +30,15 @@ class Comment
     #[ORM\JoinColumn(nullable: false)]
     private $author;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $user;
+
+    public function __construct()
+    {
+        $this->createdAt = new \Datetime;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -91,6 +100,18 @@ class Comment
     public function setAuthor(?User $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
