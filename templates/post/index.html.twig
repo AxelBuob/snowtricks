@@ -13,13 +13,12 @@
     </div>
 </header>
 
-
 <div id="main">
     <main class="container-fluid py-3">
         <div class="d-flex flex-wrap justify-content-around" style="gap: 1em">
             {% for post in posts.results %}
             <div class="card">
-            <img class="card-img-top" src="https://picsum.photos/300/200" alt="Card image cap">
+                <img class="" width="300" height="auto" src="{{ asset('uploads/img/' ~ post.image.name) }}" alt="Figure de snowboard">
                 <div class="card-body d-flex flex-row justify-content-between">
                     <div>
                         <h5 class="card-title"><a href="{{ path('post_show', {slug: post.slug}) }}">{{ post.name }}</a></h5>
