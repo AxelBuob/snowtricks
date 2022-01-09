@@ -25,11 +25,27 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $this->loadCategories($manager);
         $this->loadImages($manager);
         $this->loadUsers($manager);
         $this->loadSiteConfiguration($manager);
-        $this->loadCategories($manager);
         $this->loadPosts($manager);
+    }
+
+    private function loadCategories(ObjectManager $manager): void
+    {
+        $categories = $this->getCategoryData();
+
+        for ($i = 0; $i < count($categories); $i++) {
+
+            $category = new Category();
+            $category->setName($categories[$i]['name']);
+            $category->setSlug($categories[$i]['slug']);
+            $manager->persist($category);
+            $this->addReference($categories[$i]['slug'], $category);
+        }
+
+        $manager->flush();
     }
 
     private function loadImages(Objectmanager $manager): void
@@ -66,6 +82,7 @@ class AppFixtures extends Fixture
             $user->setRoles($roles);
             $user->setCreatedAt(new \DateTime);
             $user->setIsVerified(true);
+            $user->setImage($this->getReference('user.png'));
             if($firstname === 'Jimmy')
             {
                 $user->setImage($this->getReference('admin.png'));  
@@ -87,27 +104,12 @@ class AppFixtures extends Fixture
         $siteConfiguration->setName('Snowtricks');
         $siteConfiguration->setDescription('Site communautaire Snowtricks');
         $siteConfiguration->setUser($this->getReference('admin@snowtricks.fr'));
-        $siteConfiguration->setImage($this->getReference('logo.png'));
+        $siteConfiguration->setLogo($this->getReference('logo.png'));
         $manager->persist($siteConfiguration);
         $manager->flush();
     }
     
-    private function loadCategories(ObjectManager $manager): void
-    {
-        $categories = $this->getCategoryData();
-
-        for ($i = 0; $i < count($categories); $i++)
-        {
-
-            $category = new Category();
-            $category->setName($categories[$i]['name']);
-            $category->setSlug($categories[$i]['slug']);
-            $manager->persist($category);
-            $this->addReference($categories[$i]['slug'], $category);
-        }
-        
-       $manager->flush();
-    }
+    
 
     private function loadPosts(ObjectManager $manager): void
     {
@@ -120,7 +122,7 @@ class AppFixtures extends Fixture
             $post->setSlug($posts[$i]['slug']);
             $post->setDescription($posts[$i]['description']);
             $post->setUser($this->getReference('admin@snowtricks.fr'));
-            $post->addImage($this->getReference('post.png'));
+            $post->setImage($this->getReference('post.png'));
             if($i < 5)
             {
                 $post->setCategory($this->getReference('les-grabs'));

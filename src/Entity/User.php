@@ -43,10 +43,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isVerified;
 
-    #[ORM\OneToOne(targetEntity: Image::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private $image;
-
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comment::class, orphanRemoval: true)]
     private $comments;
 
@@ -56,6 +52,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: SiteConfiguration::class, cascade: ['persist', 'remove'])]
     private $siteConfiguration;
+
+    #[ORM\ManyToOne(targetEntity: Image::class, inversedBy: 'user')]
+    private $image;
 
     public function __construct()
     {
@@ -186,18 +185,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->isVerified;
     }
 
-    public function getImage(): ?Image
-    {
-        return $this->image;
-    }
-
-    public function setImage(Image $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Comment[]
      */
@@ -271,6 +258,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->siteConfiguration = $siteConfiguration;
+
+        return $this;
+    }
+
+    public function getImage(): ?Image
+    {
+        return $this->image;
+    }
+
+    public function setImage(?Image $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }
