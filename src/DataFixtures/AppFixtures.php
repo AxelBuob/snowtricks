@@ -26,7 +26,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $this->loadCategories($manager);
-        $this->loadImages($manager);
+        //$this->loadImages($manager);
         $this->loadUsers($manager);
         $this->loadSiteConfiguration($manager);
         $this->loadPosts($manager);
@@ -82,7 +82,7 @@ class AppFixtures extends Fixture
             $user->setRoles($roles);
             $user->setCreatedAt(new \DateTime);
             $user->setIsVerified(true);
-            $user->setImage($this->getReference('user.png'));
+            //$user->setImage($this->getReference('user.png'));
             if($firstname === 'Jimmy')
             {
                 $user->setImage($this->getReference('admin.png'));  
@@ -104,7 +104,7 @@ class AppFixtures extends Fixture
         $siteConfiguration->setName('Snowtricks');
         $siteConfiguration->setDescription('Site communautaire Snowtricks');
         $siteConfiguration->setUser($this->getReference('admin@snowtricks.fr'));
-        $siteConfiguration->setLogo($this->getReference('logo.png'));
+        //$siteConfiguration->setLogo($this->getReference('logo.png'));
         $manager->persist($siteConfiguration);
         $manager->flush();
     }
@@ -122,7 +122,7 @@ class AppFixtures extends Fixture
             $post->setSlug($posts[$i]['slug']);
             $post->setDescription($posts[$i]['description']);
             $post->setUser($this->getReference('admin@snowtricks.fr'));
-            $post->setImage($this->getReference('post.png'));
+            //$post->setImage($this->getReference('post.png'));
             if($i < 5)
             {
                 $post->setCategory($this->getReference('les-grabs'));

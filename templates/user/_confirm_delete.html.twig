@@ -1,0 +1,37 @@
+{# Confirm user delete #}
+<div id="modal-user" class="modal fade account"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Supprimer mon compte</h5>
+                <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <p>Êtes vous certain de vouloir supprimer votre compte ?</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-secondary" data-bs-dismiss="modal">Fermer</a>
+                <a href="{{ path('user_delete_account') }}" class="btn btn-danger confirm-delete-button">Supprimer</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Confirm image delete #}
+<div id="modal-image" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Supprimer mon image de profil</h5>
+                <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <p>Êtes vous certain de vouloir supprimer votre image de profile ?</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-secondary" data-bs-dismiss="modal">Fermer</a>
+                <a href="{{ path('user_delete_image') }}" class="btn btn-danger confirm-delete-button">Supprimer</a>
+            </div>
+        </div>
+    </div>
+</div>

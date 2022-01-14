@@ -24,7 +24,7 @@ class SiteConfiguration
     private $user;
 
     #[ORM\OneToOne(targetEntity: Image::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private $logo;
 
     public function getId(): ?int

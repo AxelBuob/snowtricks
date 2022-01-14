@@ -6,7 +6,11 @@
 <div class="container">
     <header>
         <div class="">
-            <img src="{{ asset('uploads/img/' ~ post.image.name) }}" class="img-fluid">
+            {% if post.image is defined and post.image is not null %}
+                    <img class="img-fluid" src="{{ asset('uploads/post/' ~ post.image.name) }}" alt="Figure de snowboard">
+                {% else %}
+                    <img class="img-fluid" src="{{ asset('build/images/post.jpeg') }} " alt="">
+                {% endif %}
         </div>
         <div class="border border-dark border-3 w-75 mx-auto text-center" style="position: relative; bottom: 2em;">
             <div class="jumbotron py-5">
@@ -50,7 +54,11 @@
                     Publié le {{ comment.createdAt | date("d M Y") }} à {{ comment.createdAt | date("h:m") }}
                 </div>
                 <div class="card-body d-flex justify-content-start">
-                    <img src="{{ asset('uploads/img/' ~ comment.user.image.name ) }}" class="rounded-circle" width="60" height="auto">
+                    {% if comment.user.image is defined and comment.user.image is not null %}
+                        <img src="{{ asset('uploads/user/' ~ comment.user.image.name) }}" alt="" width="60" height="auto">
+                    {% else %}
+                        <img src="{{ asset('build/images/user.png') }}" class="rounded-circle" width="60" height="auto">
+                    {% endif %}
                     <blockquote class="blockquote mb-0 w-100">
                         <p>{{ comment.content }}</p>
                         <footer class="blockquote-footer"><cite title="Source Title">par {{ comment.user.firstName ~ ' ' ~ comment.user.lastName }}</cite></footer>
