@@ -40,12 +40,12 @@ class CommentController extends AbstractController
             // See https://symfony.com/doc/current/components/event_dispatcher.html
             //$eventDispatcher->dispatch(new CommentCreatedEvent($comment));
 
-            return $this->redirectToRoute('post_show', ['id' => $post->getId(), 'slug' => $post->getSlug()]);
+            return $this->redirectToRoute('post_show', ['slug' => $post->getSlug()]);
         }
 
         return $this->render('post/comment_form_error.html.twig', [
             'post' => $post,
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 }

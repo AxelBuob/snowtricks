@@ -9,15 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-
 use App\Entity\Post;
-use App\Entity\Comment;
-use App\Entity\Image;
-use App\Form\CommentType;
+use App\Form\Comment\CommentType;
+use App\Form\Post\EditPostType;
 use App\Repository\CommentRepository;
-use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
 
 class PostController extends AbstractController
 {
@@ -58,6 +56,38 @@ class PostController extends AbstractController
         ]);
     }
 
+    #[Route('/ajouter-figure', name: 'post_add'), IsGranted('ROLE_USER')]
+    public function add(Request $request, EntityManagerInterface $entityManager, PostRepository $postInventory, SluggerInterface $slugger): Response
+    {
+
+        $post = new Post();
+        $post->setUser($this->getUser());
+
+        $form = $this->createForm(EditPostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $uploaded_images = $form->get('images')->getData();
+            if($uploaded_images)
+            {
+                dd($uploaded_images);
+            }
+
+            $post->setCreatedAt(new \DateTime());
+            $post->setUser($this->getUser());
+            $post->setSlug($slugger->slug($form->get('name')->getData())->lower());
+            $entityManager->persist($post);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('post_show', ['slug' => $post->getSlug()]);
+        }
+        return $this->render('post/edit.html.twig', [
+            'title' => 'Ajouter uen figure',
+            'form' => $form->createView()
+        ]);
+    }
+
 
     public function commentForm(Post $post): Response
     {
@@ -65,7 +95,7 @@ class PostController extends AbstractController
 
         return $this->render('post/_comment_form.html.twig', [
             'post' => $post,
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 }
