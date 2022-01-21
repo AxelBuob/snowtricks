@@ -29,11 +29,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 class UserController extends AbstractController
 {
 
-    private CONST UPLOADS_DIRECTORY = 'user/';
+    private CONST UPLOAD_DIRECTORY = 'user/';
 
     private function getUploadsDirectory()
     {
-        return $this->getParameter('uploads_directory') . self::UPLOADS_DIRECTORY;
+        return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
     }
 
 
@@ -140,7 +140,7 @@ class UserController extends AbstractController
             $fileSystem->remove($user_image);
 
             $image = $imageRepository->find($image_id);
-            $image->removeUser($user);
+            $image->setUser(null);
             $entityManager->persist($image);
             $entityManager->remove($image);
         }

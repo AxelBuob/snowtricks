@@ -2,23 +2,38 @@
 
 namespace App\Controller;
 
-use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+
+use App\Entity\Post;
+use App\Entity\Image;
+
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use App\Entity\Post;
+
 use App\Form\Comment\CommentType;
 use App\Form\Post\EditPostType;
-use App\Repository\CommentRepository;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
+use App\Repository\CommentRepository;
+use App\Repository\PostRepository;
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Service\FileUploaderService;
+use App\Service\FileSystemService;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class PostController extends AbstractController
 {
+
+    private const UPLOAD_DIRECTORY = 'post/';
+
+    private function getUploadsDirectory()
+    {
+        return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
+    }
+
     #[
         Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'app_home'),
         Route('/page/{page<[1-9]\d*>}', methods: ['GET'], name: 'app_home_paginated'),
@@ -69,11 +84,20 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $uploaded_images = $form->get('images')->getData();
+            
             if($uploaded_images)
             {
-                dd($uploaded_images);
-            }
+                foreach($uploaded_images as $image)
+                {
+                    $fileUploader = new FileUploaderService($this->getUploadsDirectory(), $slugger);
+                    $uploaded_image = $fileUploader->upload($image);
 
+                    $image = new Image();
+                    $image->setName($uploaded_image);
+                    $entityManager->persist($image);
+                    $post->addImage($image);
+                }
+            }
             $post->setCreatedAt(new \DateTime());
             $post->setUser($this->getUser());
             $post->setSlug($slugger->slug($form->get('name')->getData())->lower());

@@ -26,8 +26,17 @@
     <div>
         <p>Publié le <b>{{ post.createdAt | date("d M Y") }}</b> à <b>{{ post.createdAt | date('h:m') }}</b> par <em>{{ post.user.firstName }} {{ post.user.lastName }}</em> dans la catégorie <strong>{{ post.category.name }}</strong></p>
     </div>
-
     <hr>
+    
+    {% if post.images is defined and post.images is not null %}
+        <div class="d-flex flex-wrap gap-2 py-5">
+        {% for image in post.images %}
+            <a class="d-inline-block" href="{{ asset('uploads/post/' ~ image.name) }}">
+                <img src="{{ asset('uploads/post/' ~ image.name) }}" alt="" width="200px" height="150px" style="object-fit: cover;">
+            </a>
+        {% endfor %}
+        </div>
+    {% endif %}
     
     <div>
         <h3>Laisser un commentaire</h3>

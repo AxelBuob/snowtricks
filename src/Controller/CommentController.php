@@ -13,7 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 use App\Entity\Post;
 use App\Entity\Comment;
-use App\Form\CommentType;
+use App\Form\Comment\CommentType;
 
 
 class CommentController extends AbstractController

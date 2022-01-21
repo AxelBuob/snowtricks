@@ -21,16 +21,12 @@ class Image
     #[ORM\Column(type: 'boolean')]
     private $featured = false;
 
-    #[ORM\OneToMany(mappedBy: 'image', targetEntity: Post::class)]
-    private $post;
 
     #[ORM\OneToOne(mappedBy: 'Image', targetEntity: User::class, cascade: ['persist', 'remove'])]
     private $user;
 
-    public function __construct()
-    {
-        $this->post = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'images')]
+    private $post;
 
     public function getId(): ?int
     {
@@ -61,35 +57,6 @@ class Image
         return $this;
     }
 
-    /**
-     * @return Collection|Post[]
-     */
-    public function getPost(): Collection
-    {
-        return $this->post;
-    }
-
-    public function addPost(Post $post): self
-    {
-        if (!$this->post->contains($post)) {
-            $this->post[] = $post;
-            $post->setImage($this);
-        }
-
-        return $this;
-    }
-
-    public function removePost(Post $post): self
-    {
-        if ($this->post->removeElement($post)) {
-            // set the owning side to null (unless already changed)
-            if ($post->getImage() === $this) {
-                $post->setImage(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getUser(): ?User
     {
@@ -109,6 +76,18 @@ class Image
         }
 
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPost(): ?Post
+    {
+        return $this->post;
+    }
+
+    public function setPost(?Post $post): self
+    {
+        $this->post = $post;
 
         return $this;
     }

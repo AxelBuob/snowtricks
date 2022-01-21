@@ -2,7 +2,6 @@
 
 namespace App\Form\Post;
 
-use App\Entity\Image;
 use App\Entity\Post;
 use App\Entity\Category;
 use Symfony\Component\Form\AbstractType;
@@ -15,6 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Validator\Constraints\File;
 
 class EditPostType extends AbstractType
@@ -56,8 +56,13 @@ class EditPostType extends AbstractType
 
             ])
             ->add('images', FileType::class, [
-                'label' => false,
+                'label' => 'Ajouter des images',
                 'multiple' => true,
+                'mapped' => false,
+                'required' => false
+            ])
+            ->add('video', UrlType::class, [
+                'label' => 'Ajouter des vidéos',
                 'mapped' => false,
                 'required' => false
             ])
