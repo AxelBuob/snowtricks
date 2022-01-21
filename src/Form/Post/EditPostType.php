@@ -66,9 +66,6 @@ class EditPostType extends AbstractType
                 'mapped' => false,
                 'required' => false
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer'
-            ])
         ;
     }
 

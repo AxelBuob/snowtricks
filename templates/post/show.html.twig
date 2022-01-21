@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
-
 <div class="container">
     <header>
         <div>
+            {% if is_granted('ROLE_USER') %}
             <div class="d-flex justify-content-end">
                 <div class="position-absolute  m-1 p-2 border border-2 border-primary" style="">
-                    <a href="#"><i class="fas fa-pencil-alt me-2 fa-2x"></i></a>
-                    <a class="link-danger" href="#"><i class="far fa-trash-alt fa-2x"></i></a>
+                    <a href="{{ path('post_edit', {slug: post.slug} ) }}"><i class="fas fa-pencil-alt me-2 fa-2x"></i></a>
+                    <a class="link-danger" href="{{ path('post_delete', {id: post.id}) }}"><i class="far fa-trash-alt fa-2x"></i></a>
                 </div>
             </div>
+            {% endif %}
             {% if post.image is defined and post.image is not null %}
                     <img class="img-fluid" src="{{ asset('uploads/post/' ~ post.image.name) }}" alt="Figure de snowboard">
                 {% else %}
@@ -30,19 +30,26 @@
     <div>
 
     <div>
-        <p>Publié le <b>{{ post.createdAt | date("d M Y") }}</b> à <b>{{ post.createdAt | date('h:m') }}</b> par <em>{{ post.user.firstName }} {{ post.user.lastName }}</em> dans la catégorie <strong>{{ post.category.name }}</strong></p>
+        <p>
+            {% if post.updatedAt is defined and post.updatedAt is not null %}
+                Mis à jour le <b>{{ post.updatedAt | date("d M Y") }}</b>
+                à <b>{{ post.updatedAt | date('h:m') }}</b>
+            {% else %}
+                Publié le <b>{{ post.createdAt | date("d M Y") }}</b>
+                à <b>{{ post.createdAt | date('h:m') }}</b>
+            {% endif %}
+            par <em>{{ post.user.firstName }} {{ post.user.lastName }}</em> 
+            dans la catégorie <strong>{{ post.category.name }}</strong>
+        </p>
     </div>
     <hr>
     
     {% if post.images is defined and post.images is not null %}
-        <div class="d-flex flex-wrap gap-2 py-5">
+        <div class="d-flex flex-wrap gap-2 py-3">
         {% for image in post.images %}
             <a class="" href="{{ asset('uploads/post/' ~ image.name) }}">
                 <div>
                     <img class="d-block" src="{{ asset('uploads/post/' ~ image.name) }}" alt="" width="200px" height="150px" style="object-fit: cover;">
-                    <a href="#" class="d-block link-danger border border-danger border-2 p-1">
-                        <i class="far fa-trash-alt"></i>
-                    </a>
                 </div>
             </a>
         {% endfor %}

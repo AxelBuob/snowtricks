@@ -27,12 +27,17 @@
                     <div>
                         <h5 class="card-title"><a href="{{ path('post_show', {slug: post.slug}) }}">{{ post.name }}</a></h5>
                     </div>
+                    {% if is_granted('ROLE_USER') %}
                     <div>
-                        <a href="#"><i class="fas fa-pencil-alt me-2"></i></a>
-                        <a href="#"><i class="far fa-trash-alt"></i></a>
+                        <a href="{{ path('post_edit', {slug: post.slug} ) }}"><i class="fas fa-pencil-alt me-2"></i></a>
+                        <a data-bs-toggle="modal" data-bs-target="#modal-post" href="#" >
+                            <i class="far fa-trash-alt"></i>
+                        </a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
+            {{ include('post/_confirm_delete.html.twig')}}
             {% endfor %}   
         </div>
         
@@ -66,8 +71,12 @@
                 <i class="fas fa-arrow-up fa-3x"></i>
             </a>
         </div>
-
+        
     </main>
 </div>
+{% endblock %}
 
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    {# {{ encore_entry_script_tags('post_index') }} #}
 {% endblock %}
