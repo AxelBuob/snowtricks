@@ -24,13 +24,12 @@ class Image
     #[ORM\OneToMany(mappedBy: 'image', targetEntity: Post::class)]
     private $post;
 
-    #[ORM\OneToMany(mappedBy: 'image', targetEntity: User::class)]
+    #[ORM\OneToOne(mappedBy: 'Image', targetEntity: User::class, cascade: ['persist', 'remove'])]
     private $user;
 
     public function __construct()
     {
         $this->post = new ArrayCollection();
-        $this->user = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,32 +91,24 @@ class Image
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getUser(): Collection
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function addUser(User $user): self
+    public function setUser(?User $user): self
     {
-        if (!$this->user->contains($user)) {
-            $this->user[] = $user;
+        // unset the owning side of the relation if necessary
+        if ($user === null && $this->user !== null) {
+            $this->user->setImage(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($user !== null && $user->getImage() !== $this) {
             $user->setImage($this);
         }
 
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->user->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getImage() === $this) {
-                $user->setImage(null);
-            }
-        }
+        $this->user = $user;
 
         return $this;
     }

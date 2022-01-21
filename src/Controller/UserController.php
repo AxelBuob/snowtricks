@@ -52,14 +52,13 @@ class UserController extends AbstractController
 
             if($uploaded_image)
             {
-
                 $this->removeImage($user, $imageRepository, $entityManager);
 
                 $fileUploader = new FileUploaderService($this->getUploadsDirectory(), $slugger);
                 $uploaded_image = $fileUploader->upload($uploaded_image);
                 $image = new Image();
                 $image->setName($uploaded_image);
-                $image->addUser($user);
+                $image->setUser($user);
                 $entityManager->persist($image);
                 $this->addFlash('success', 'Image mis à jour avec succès.');
             }
@@ -111,7 +110,6 @@ class UserController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-           
             $this->hashPassword($user, $form->get('newPassword')->getData(), $passwordHasher);
 
             $entityManager->flush();
