@@ -107,7 +107,7 @@ class PostController extends AbstractController
             return $this->redirectToRoute('post_show', ['slug' => $post->getSlug()]);
         }
         return $this->render('post/edit.html.twig', [
-            'title' => 'Ajouter uen figure',
+            'title' => 'Ajouter une figure',
             'form' => $form->createView()
         ]);
     }
