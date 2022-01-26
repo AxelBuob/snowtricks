@@ -28,6 +28,10 @@ use PHPUnit\Util\Json;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
+
 class PostController extends AbstractController
 {
 
@@ -39,15 +43,32 @@ class PostController extends AbstractController
     }
 
     #[
-        Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'app_home'),
-        Route('/page/{page<[1-9]\d*>}', methods: ['GET'], name: 'app_home_paginated'),
+        Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'app_home')
     ]
-    #[Cache(smaxage: 10)]
-    public function index(int $page, PostRepository $posts): Response
+    public function index(int $page, PostRepository $postRepository): Response
     {
-        $latestPosts = $posts->findLatest($page);
+        $posts = $postRepository->findLatest($page);
+
         return $this->render('post/index.html.twig', [
-            'posts' => $latestPosts
+            'posts' => $posts,
+            'paginator' => json_encode([
+                'numResults' => $posts->getNumResults(),
+                'pageSize' => $posts->getPageSize(),
+                'currentPage' => $posts->getCurrentPage(),
+                'hasNextPage' => $posts->hasNextPage()
+            ])
+        ]);
+    }
+
+     #[
+        Route('/page/{page}', name: 'loadMorePosts', requirements: ['page' => '\d+'])
+     ]
+    public function loadMorePosts(PostRepository $postRepository, $page = 5)
+    {
+        $posts = $postRepository->findLatest($page);
+
+        return $this->render('post/_list_posts.html.twig', [
+            'posts' => $posts
         ]);
     }
 

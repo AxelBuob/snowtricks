@@ -3,28 +3,19 @@
     "app": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_modules_es_objec-2d060a.js",
-        "/build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-bf0533.js",
+        "/build/vendors-node_modules_jquery_dist_jquery_js.js",
+        "/build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-6a5154.js",
         "/build/app.js"
       ],
       "css": [
         "/build/app.css"
       ]
     },
-    "post_index": {
+    "loadMorePosts": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_modules_es_objec-2d060a.js",
-        "/build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-1669b7.js",
-        "/build/post_index.js"
-      ]
-    },
-    "post_edit": {
-      "js": [
-        "/build/runtime.js",
-        "/build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_modules_es_objec-2d060a.js",
-        "/build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-1669b7.js",
-        "/build/post_edit.js"
+        "/build/vendors-node_modules_jquery_dist_jquery_js.js",
+        "/build/loadMorePosts.js"
       ]
     }
   }
