@@ -8,7 +8,6 @@ use Doctrine\Persistence\ObjectManager;
 use App\Entity\User;
 use App\Entity\Post;
 use App\Entity\Category;
-use App\Entity\Image;
 use App\Entity\SiteConfiguration;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -26,7 +25,6 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $this->loadCategories($manager);
-        $this->loadImages($manager);
         $this->loadUsers($manager);
         $this->loadSiteConfiguration($manager);
         $this->loadPosts($manager);
@@ -48,29 +46,6 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    private function loadImages(Objectmanager $manager): void
-    {
-        $images = [
-            [ 'logo', 'logo.png' ],
-            [ 'post', 'post.png' ],
-            [ 'admin', 'admin.png' ],
-            [ 'user', 'user.png' ]
-        ];
-
-        foreach($images as [$key, $name])
-        {
-            $image = new Image();
-            $image->setName($name);
-            if($key === 'post')
-            {
-                $image->setFeatured(true);
-            }
-            $manager->persist($image);
-            $this->addReference($name, $image);
-        }
-        $manager->flush();
-    }
-
     private function loadUsers(ObjectManager $manager): void
     {
         foreach ($this->getUserData() as [$firstname, $lastname, $password, $email, $roles]) {
@@ -82,15 +57,6 @@ class AppFixtures extends Fixture
             $user->setRoles($roles);
             $user->setCreatedAt(new \DateTime);
             $user->setIsVerified(true);
-            $user->setImage($this->getReference('user.png'));
-            if($firstname === 'Jimmy')
-            {
-                $user->setImage($this->getReference('admin.png'));  
-            }
-            else
-            {
-                $user->setImage($this->getReference('user.png'));
-            }
             $manager->persist($user);
             $this->addReference($email, $user);
         }
@@ -104,7 +70,6 @@ class AppFixtures extends Fixture
         $siteConfiguration->setName('Snowtricks');
         $siteConfiguration->setDescription('Site communautaire Snowtricks');
         $siteConfiguration->setUser($this->getReference('admin@snowtricks.fr'));
-        $siteConfiguration->setLogo($this->getReference('logo.png'));
         $manager->persist($siteConfiguration);
         $manager->flush();
     }
@@ -122,7 +87,7 @@ class AppFixtures extends Fixture
             $post->setSlug($posts[$i]['slug']);
             $post->setDescription($posts[$i]['description']);
             $post->setUser($this->getReference('admin@snowtricks.fr'));
-            $post->setImage($this->getReference('post.png'));
+            //$post->setImage($this->getReference('post.png'));
             if($i < 5)
             {
                 $post->setCategory($this->getReference('les-grabs'));

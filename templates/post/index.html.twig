@@ -18,17 +18,26 @@
         <div class="d-flex flex-wrap justify-content-around" style="gap: 1em">
             {% for post in posts.results %}
             <div class="card">
-                <img class="" width="300" height="auto" src="{{ asset('uploads/img/' ~ post.image.name) }}" alt="Figure de snowboard">
+                {% if post.image is defined and post.image is not null %}
+                    <img width="300" height="auto" src="{{ asset('uploads/post/' ~ post.image.name) }}" alt="Figure de snowboard">
+                {% else %}
+                    <img width="300" height="auto" src="{{ asset('build/images/post.jpeg') }} " alt="">
+                {% endif %}
                 <div class="card-body d-flex flex-row justify-content-between">
                     <div>
                         <h5 class="card-title"><a href="{{ path('post_show', {slug: post.slug}) }}">{{ post.name }}</a></h5>
                     </div>
+                    {% if is_granted('ROLE_USER') %}
                     <div>
-                        <a href="#"><i class="fas fa-pencil-alt me-2"></i></a>
-                        <a href="#"><i class="far fa-trash-alt"></i></a>
+                        <a href="{{ path('post_edit', {slug: post.slug} ) }}"><i class="fas fa-pencil-alt me-2"></i></a>
+                        <a data-bs-toggle="modal" data-bs-target="#modal-post" href="#" >
+                            <i class="far fa-trash-alt"></i>
+                        </a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
+            {{ include('post/_confirm_delete.html.twig')}}
             {% endfor %}   
         </div>
         
@@ -62,8 +71,12 @@
                 <i class="fas fa-arrow-up fa-3x"></i>
             </a>
         </div>
-
+        
     </main>
 </div>
+{% endblock %}
 
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    {# {{ encore_entry_script_tags('post_index') }} #}
 {% endblock %}

@@ -2,37 +2,72 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use App\Entity\Image;
 use App\Entity\User;
 use App\Form\User\ChangePassWordType;
 use App\Form\User\UserInformationType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use App\Repository\ImageRepository;
+
+use App\Service\FileSystemService;
+use App\Service\FileUploaderService;
+
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class UserController extends AbstractController
 {
+
+    private CONST UPLOAD_DIRECTORY = 'user/';
+
+    private function getUploadsDirectory()
+    {
+        return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
+    }
+
+
+
     #[Route('/mon-compte', name: 'user_account'), IsGranted('ROLE_USER')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, ImageRepository $imageRepository): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
         $user = $this->getUser();
-
         $form= $this->createForm(UserInformationType::class, $user);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $uploaded_image = $form->get('image')->getData();
+
+            if($uploaded_image)
+            {
+                $this->removeImage($user, $imageRepository, $entityManager);
+
+                $fileUploader = new FileUploaderService($this->getUploadsDirectory(), $slugger);
+                $uploaded_image = $fileUploader->upload($uploaded_image);
+                $image = new Image();
+                $image->setName($uploaded_image);
+                $image->setUser($user);
+                $entityManager->persist($image);
+                $this->addFlash('success', 'Image mis à jour avec succès.');
+            }
+
             $entityManager->persist($user);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Compte mis à jour avec succès.');
+            return $this->redirectToRoute('user_account');
         }
 
         return $this->renderForm('user/index.html.twig', [
@@ -42,7 +77,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/supprimer-mon-compte', name: 'user_delete_account')]
+    #[Route('/supprimer-mon-compte', name: 'user_delete_account'), IsGranted('ROLE_USER')]
     public function deleteAccount(EntityManagerInterface $entityManager): RedirectResponse
     {
         $user = $this->getUser();
@@ -57,14 +92,26 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_home');
     }
 
-    #[Route('/modifier-mon-mot-de-passe', methods: ['GET', 'POST'], name: 'user_change_password')]
+    #[Route('/supprimer-profile-image', name: 'user_delete_image'), IsGranted('ROLE_USER')]
+    public function deleteImage(EntityManagerInterface $entityManager, ImageRepository $imageRepository): RedirectResponse
+    {
+        $user = $this->getUser();
+        $this->removeImage($user, $imageRepository, $entityManager);
+        $entityManager->flush();
+        $this->addFlash('success', 'Image supprimé avec succès.');
+        return $this->redirectToRoute('user_account');
+    }
+
+    #[Route('/modifier-mon-mot-de-passe', methods: ['GET', 'POST'], name: 'user_change_password'), IsGranted('ROLE_USER')]
     public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
         $form = $this->createForm(ChangePasswordType::class)->add('save', SubmitType::class, ['label' => 'Modifier mon mot de passe']);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword($passwordHasher->hashPassword($user, $form->get('newPassword')->getData()));
+
+            $this->hashPassword($user, $form->get('newPassword')->getData(), $passwordHasher);
+
             $entityManager->flush();
             $this->addFlash(
                 'success',
@@ -77,5 +124,26 @@ class UserController extends AbstractController
         ]);
     }
 
+    private function hashPassword(User $user,string $password, UserPasswordHasherInterface $passwordHasher): void
+    {
+        $user->setPassword($passwordHasher->hashPassword($user, $password));
+    }
+
+    private function removeImage(User $user, ImageRepository $imageRepository, EntityManagerInterface $entityManager): void
+    {
+        if ($user->getImage()) {
+
+            $image_id = $user->getImage()->getId();
+            $user_image = $this->getUploadsDirectory() . $user->getImage()->getName();
+
+            $fileSystem = new FileSystemService($user_image);
+            $fileSystem->remove($user_image);
+
+            $image = $imageRepository->find($image_id);
+            $image->setUser(null);
+            $entityManager->persist($image);
+            $entityManager->remove($image);
+        }
+    }
 
 }

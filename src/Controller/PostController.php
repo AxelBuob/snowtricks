@@ -2,25 +2,42 @@
 
 namespace App\Controller;
 
-use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 use App\Entity\Post;
-use App\Entity\Comment;
 use App\Entity\Image;
-use App\Form\CommentType;
+
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+
+use App\Form\Comment\CommentType;
+use App\Form\Post\EditPostType;
+
 use App\Repository\CommentRepository;
-use Doctrine\ORM\Mapping\Entity;
+use App\Repository\PostRepository;
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Service\FileUploaderService;
+use App\Service\FileSystemService;
+use Doctrine\ORM\EntityManager;
+use PHPUnit\Util\Json;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class PostController extends AbstractController
 {
+
+    private const UPLOAD_DIRECTORY = 'post/';
+
+    private function getUploadsDirectory()
+    {
+        return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
+    }
+
     #[
         Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'app_home'),
         Route('/page/{page<[1-9]\d*>}', methods: ['GET'], name: 'app_home_paginated'),
@@ -29,10 +46,6 @@ class PostController extends AbstractController
     public function index(int $page, PostRepository $posts): Response
     {
         $latestPosts = $posts->findLatest($page);
-
-        // Every template name also has two extensions that specify the format and
-        // engine for that template.
-        // See https://symfony.com/doc/current/templates.html#template-naming
         return $this->render('post/index.html.twig', [
             'posts' => $latestPosts
         ]);
@@ -58,35 +71,104 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/comment/{slug}/new', methods: ['POST'], name: 'comment_new')]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function commentNew(Request $request, Post $post, EntityManagerInterface $entityManager): Response
+    #[Route('/ajouter-figure', name: 'post_add'), IsGranted('ROLE_USER')]
+    public function add(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        $comment = new Comment();
-        $comment->setUser($this->getUser());
-        $post->addComment($comment);
 
-        $form = $this->createForm(CommentType::class, $comment);
+        $post = new Post();
+        $post->setUser($this->getUser());
+
+        $form = $this->createForm(EditPostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($comment);
+
+            $uploaded_images = $form->get('images')->getData();
+            
+            if($uploaded_images)
+            {
+                foreach($uploaded_images as $image)
+                {
+                    $fileUploader = new FileUploaderService($this->getUploadsDirectory(), $slugger);
+                    $uploaded_image = $fileUploader->upload($image);
+                    $image = new Image();
+                    $image->setName($uploaded_image);
+                    $entityManager->persist($image);
+                    $post->addImage($image);
+                }
+            }
+            $post->setCreatedAt(new \DateTime());
+            $post->setUser($this->getUser());
+            $post->setSlug($slugger->slug($form->get('name')->getData())->lower());
+            $entityManager->persist($post);
             $entityManager->flush();
 
-            // When an event is dispatched, Symfony notifies it to all the listeners
-            // and subscribers registered to it. Listeners can modify the information
-            // passed in the event and they can even modify the execution flow, so
-            // there's no guarantee that the rest of this controller will be executed.
-            // See https://symfony.com/doc/current/components/event_dispatcher.html
-            //$eventDispatcher->dispatch(new CommentCreatedEvent($comment));
+            return $this->redirectToRoute('post_show', ['slug' => $post->getSlug()]);
+        }
+        return $this->render('post/edit.html.twig', [
+            'title' => 'Ajouter une figure',
+            'form' => $form->createView()
+        ]);
+    }
 
-            return $this->redirectToRoute('post_show', ['id' => $post->getId(), 'slug' => $post->getSlug()]);
+    #[Route('/editer-figure/{slug}', name: 'post_edit'), IsGranted('ROLE_USER')]
+    public function edit(Post $post, Request $request, EntityManagerInterface $entityManager, Postrepository $postRepository, SluggerInterface $slugger): Response
+    {
+        $form = $this->createForm(EditPostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $uploaded_images = $form->get('images')->getData();
+            if ($uploaded_images) {
+                foreach ($uploaded_images as $image) {
+                    $fileUploader = new FileUploaderService($this->getUploadsDirectory(), $slugger);
+                    $uploaded_image = $fileUploader->upload($image);
+                    $image = new Image();
+                    $image->setName($uploaded_image);
+                    $entityManager->persist($image);
+                    $post->addImage($image);
+                }
+            }
+            $post->setUpdatedAt(new \DateTime());
+            $entityManager->flush();
+            $this->addFlash('success', 'Figure modifié avec succès.');
+            return $this->redirectToRoute('post_edit', ['slug' => $post->getSlug()]);
         }
 
-        return $this->render('post/comment_form_error.html.twig', [
-            'post' => $post,
+        return $this->render('post/edit.html.twig', [
+            'title' => 'Modifier une figure',
             'form' => $form->createView(),
+            'post' => $post
         ]);
+    }
+
+    #[Route('/supprimer-figure/{id}', name: 'post_delete'), IsGranted('ROLE_USER')]
+    public function deletePost(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        if($post->getImages())
+        {
+            foreach($post->getImages() as $image)
+            {
+                $this->deleteImage($image, $entityManager);
+            }
+        }
+        $entityManager->remove($post);
+        $entityManager->flush();
+        $this->addFlash('success', 'L\'article  a bien été supprimé.');
+        return $this->RedirectToRoute('app_home');
+    }
+
+    #[Route('/supprime-image/{id}', name: 'delete_image', methods: 'DELETE'), IsGranted('ROLE_USER')]
+    public function deleteImageId(Image $image, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
+            $this->deleteImage($image, $entityManager);
+            return new JsonResponse(['success' => 1]);
+        } else {
+            return new JsonResponse(['error' => 'Token Invalide'], 400);
+        }
     }
 
     public function commentForm(Post $post): Response
@@ -95,7 +177,15 @@ class PostController extends AbstractController
 
         return $this->render('post/_comment_form.html.twig', [
             'post' => $post,
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
+    }
+
+    public function deleteImage(Image $image, EntityManagerInterface $entityManager): void
+    {
+        $fileSystem = new FileSystemService();
+        $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
+        $entityManager->remove($image);
+        $entityManager->flush();
     }
 }

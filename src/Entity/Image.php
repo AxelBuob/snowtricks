@@ -21,17 +21,12 @@ class Image
     #[ORM\Column(type: 'boolean')]
     private $featured = false;
 
-    #[ORM\OneToMany(mappedBy: 'image', targetEntity: Post::class)]
-    private $post;
 
-    #[ORM\OneToMany(mappedBy: 'image', targetEntity: User::class)]
+    #[ORM\OneToOne(mappedBy: 'Image', targetEntity: User::class, cascade: ['persist', 'remove'])]
     private $user;
 
-    public function __construct()
-    {
-        $this->post = new ArrayCollection();
-        $this->user = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'images')]
+    private $post;
 
     public function getId(): ?int
     {
@@ -62,62 +57,37 @@ class Image
         return $this;
     }
 
-    /**
-     * @return Collection|Post[]
-     */
-    public function getPost(): Collection
-    {
-        return $this->post;
-    }
 
-    public function addPost(Post $post): self
-    {
-        if (!$this->post->contains($post)) {
-            $this->post[] = $post;
-            $post->setImage($this);
-        }
-
-        return $this;
-    }
-
-    public function removePost(Post $post): self
-    {
-        if ($this->post->removeElement($post)) {
-            // set the owning side to null (unless already changed)
-            if ($post->getImage() === $this) {
-                $post->setImage(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|User[]
-     */
-    public function getUser(): Collection
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function addUser(User $user): self
+    public function setUser(?User $user): self
     {
-        if (!$this->user->contains($user)) {
-            $this->user[] = $user;
+        // unset the owning side of the relation if necessary
+        if ($user === null && $this->user !== null) {
+            $this->user->setImage(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($user !== null && $user->getImage() !== $this) {
             $user->setImage($this);
         }
+
+        $this->user = $user;
 
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function getPost(): ?Post
     {
-        if ($this->user->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getImage() === $this) {
-                $user->setImage(null);
-            }
-        }
+        return $this->post;
+    }
+
+    public function setPost(?Post $post): self
+    {
+        $this->post = $post;
 
         return $this;
     }

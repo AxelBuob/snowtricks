@@ -53,8 +53,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: SiteConfiguration::class, cascade: ['persist', 'remove'])]
     private $siteConfiguration;
 
-    #[ORM\ManyToOne(targetEntity: Image::class, inversedBy: 'user')]
-    private $image;
+    #[ORM\OneToOne(inversedBy: 'user', targetEntity: Image::class, cascade: ['persist', 'remove'])]
+    private $Image;
 
     public function __construct()
     {
@@ -264,12 +264,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getImage(): ?Image
     {
-        return $this->image;
+        return $this->Image;
     }
 
-    public function setImage(?Image $image): self
+    public function setImage(?Image $Image): self
     {
-        $this->image = $image;
+        $this->Image = $Image;
 
         return $this;
     }
