@@ -20,15 +20,17 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Post::class);
     }
 
-
-    public function findLatestWithFeaturedImage()
+    public function loadPosts(int $offset, int $limit)
     {
-        return $this->createQueryBuilder(alias: 'p')
-                    ->leftJoin('p.images', 'i')
-                    ->addSelect('i')
-                    //->andWhere('i.featured = true')
-                    ->getQuery()
-                    ->getResult();
+        $qb = $this->createQueryBuilder('t')
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery();
+
+        $qb->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+
+        return $qb->getResult();
     }
 
     public function findLatest(int $page = 1): Paginator

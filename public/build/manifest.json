@@ -1,12 +1,13 @@
 {
   "build/app.css": "/build/app.css",
   "build/app.js": "/build/app.js",
-  "build/post_index.js": "/build/post_index.js",
+  "build/loadMorePosts.js": "/build/loadMorePosts.js",
   "build/post_edit.js": "/build/post_edit.js",
   "build/runtime.js": "/build/runtime.js",
+  "build/vendors-node_modules_jquery_dist_jquery_js.js": "/build/vendors-node_modules_jquery_dist_jquery_js.js",
   "build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_modules_es_objec-2d060a.js": "/build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_modules_es_objec-2d060a.js",
+  "build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-a01f2c.js": "/build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-a01f2c.js",
   "build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-1669b7.js": "/build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-1669b7.js",
-  "build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-bf0533.js": "/build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-bf0533.js",
   "build/images/post.jpeg": "/build/images/post.5194caca.jpeg",
   "build/images/user.png": "/build/images/user.68cb0bff.png"
 }
