@@ -48,8 +48,9 @@ class AppFixtures extends Fixture
 
     private function loadUsers(ObjectManager $manager): void
     {
-        foreach ($this->getUserData() as [$firstname, $lastname, $password, $email, $roles]) {
+        foreach ($this->getUserData() as [$username, $firstname, $lastname, $password, $email, $roles]) {
             $user = new User();
+            $user->setUsername($username);
             $user->setFirstname($firstname);
             $user->setLastname($lastname);
             $user->setPassword($this->userPasswordHasher->hashPassword($user, $password));
@@ -105,9 +106,9 @@ class AppFixtures extends Fixture
     private function getUserData(): array
     {
         return [
-            // $userData = [$firstname, $lastname, $password, $email, $roles];
-            ['Jimmy', 'Sweat', 'password', 'admin@snowtricks.fr', ['ROLE_ADMIN']],
-            ['John', 'user', 'password', 'johnuser@test.com', ['ROLE_USER']]
+            // $userData = [$username, $firstname, $lastname, $password, $email, $roles];
+            ['jimmy', 'Jimmy', 'Sweat', 'password', 'admin@snowtricks.fr', ['ROLE_ADMIN']],
+            ['john', 'John', 'user', 'password', 'johnuser@test.com', ['ROLE_USER']]
         ];
     }
 

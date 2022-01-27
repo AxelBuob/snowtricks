@@ -24,6 +24,13 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('username', TextType::class, [
+                'label' => 'Nom d\'utilisateur',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(60,2)
+                ]
+            ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'constraints' => [
@@ -32,20 +39,20 @@ class RegistrationFormType extends AbstractType
                     new Email()
                 ]
             ])
-            ->add('first_name', TextType::class, [
-                'label' => 'Prénom',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(50, 2)
-                ]
-            ])
-            ->add('last_name', TextType::class, [
-                'label' => 'Nom',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(50, 2)
-                ]
-            ])
+            // ->add('first_name', TextType::class, [
+            //     'label' => 'Prénom',
+            //     'constraints' => [
+            //         new NotBlank(),
+            //         new Length(50, 2)
+            //     ]
+            // ])
+            // ->add('last_name', TextType::class, [
+            //     'label' => 'Nom',
+            //     'constraints' => [
+            //         new NotBlank(),
+            //         new Length(50, 2)
+            //     ]
+            // ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'constraints' => [
