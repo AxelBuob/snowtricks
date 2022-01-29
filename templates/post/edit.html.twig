@@ -21,7 +21,7 @@
                     <a  href="{{ asset('uploads/post/' ~ image.name) }}">
                         <div class="text-center">
                             <img class="d-block" src="{{ asset('uploads/post/' ~ image.name) }}" alt="" width="200px" height="150px" style="object-fit: cover;">
-                            <a data-bs-toggle="modal" data-bs-target="#modal-image" class="d-block link-danger border border-danger border-2 p-1" href="{{ path('delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id )}}">
+                            <a data-bs-toggle="modal" data-bs-target="#modal-image" class="d-block link-danger border border-danger border-2 p-1" href="{{ path('delete_image', {id: image.id}) }}">
                                 <i class="far fa-trash-alt"></i>
                             </a>
                             {{ include('post/_confirm_delete.html.twig')}}
@@ -41,5 +41,4 @@
 
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
-    {{ encore_entry_script_tags('post_edit') }}
 {% endblock %}

@@ -180,16 +180,12 @@ class PostController extends AbstractController
         return $this->RedirectToRoute('app_home');
     }
 
-    #[Route('/supprime-image/{id}', name: 'delete_image', methods: 'DELETE'), IsGranted('ROLE_USER')]
-    public function deleteImageId(Image $image, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/supprime-image/{id}', name: 'delete_image'), IsGranted('ROLE_USER')]
+    public function deleteImageId(Image $image, Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
-        $data = json_decode($request->getContent(), true);
-        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
-            $this->deleteImage($image, $entityManager);
-            return new JsonResponse(['success' => 1]);
-        } else {
-            return new JsonResponse(['error' => 'Token Invalide'], 400);
-        }
+        $this->deleteImage($image, $entityManager);
+        $this->addFlash('success', 'Image supprimé avec succès.');
+        return $this->redirectToRoute('app_home');
     }
 
     public function commentForm(Post $post): Response
