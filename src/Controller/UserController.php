@@ -132,13 +132,10 @@ class UserController extends AbstractController
     private function removeImage(User $user, ImageRepository $imageRepository, EntityManagerInterface $entityManager): void
     {
         if ($user->getImage()) {
-
             $image_id = $user->getImage()->getId();
             $user_image = $this->getUploadsDirectory() . $user->getImage()->getName();
-
             $fileSystem = new FileSystemService($user_image);
             $fileSystem->remove($user_image);
-
             $image = $imageRepository->find($image_id);
             $image->setUser(null);
             $entityManager->persist($image);
