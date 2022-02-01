@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Form\Comment\CommentType;
-use App\Form\Post\EditPostType;
+use App\Form\Post\PostType;
 
 use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
@@ -27,6 +27,8 @@ use Doctrine\ORM\EntityManager;
 use PHPUnit\Util\Json;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -99,10 +101,17 @@ class PostController extends AbstractController
         $post = new Post();
         $post->setUser($this->getUser());
 
-        $form = $this->createForm(EditPostType::class, $post);
+        $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+
+            foreach($post->getVideos() as $video)
+            {
+                $video->setPost($post);
+                $entityManager->persist($video);
+            }
 
             $uploaded_images = $form->get('images')->getData();
             
@@ -118,10 +127,12 @@ class PostController extends AbstractController
                     $post->addImage($image);
                 }
             }
+
             $post->setCreatedAt(new \DateTime());
             $post->setUser($this->getUser());
             $post->setSlug($slugger->slug($form->get('name')->getData())->lower());
             $entityManager->persist($post);
+
             $entityManager->flush();
 
             return $this->redirectToRoute('post_show', ['slug' => $post->getSlug()]);
@@ -133,12 +144,33 @@ class PostController extends AbstractController
     }
 
     #[Route('/editer-figure/{slug}', name: 'post_edit'), IsGranted('ROLE_USER')]
-    public function edit(Post $post, Request $request, EntityManagerInterface $entityManager, Postrepository $postRepository, SluggerInterface $slugger): Response
+    public function edit(Post $post, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        $form = $this->createForm(EditPostType::class, $post);
+        $videos = new ArrayCollection();
+        foreach ($post->getVideos() as $video) {
+            $videos->add($video);
+        }
+
+        $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
+
+            foreach ($videos as $video) {
+                if (false === $post->getVideos()->contains($video)) {
+                    // remove the Task from the Tag
+                    $video->getPost()->removeVideo($video);
+
+                    // if it was a many-to-one relationship, remove the relationship like this
+                    $video->setPost(null);
+
+                    $entityManager->persist($video);
+
+                    // if you wanted to delete the Tag entirely, you can also do that
+                    $entityManager->remove($video);
+                }
+            }
 
             $uploaded_images = $form->get('images')->getData();
             if ($uploaded_images) {
@@ -151,6 +183,7 @@ class PostController extends AbstractController
                     $post->addImage($image);
                 }
             }
+
             $post->setUpdatedAt(new \DateTime());
             $entityManager->flush();
             $this->addFlash('success', 'Figure modifié avec succès.');
@@ -181,11 +214,19 @@ class PostController extends AbstractController
     }
 
     #[Route('/supprime-image/{id}', name: 'delete_image'), IsGranted('ROLE_USER')]
-    public function deleteImageId(Image $image, Request $request, EntityManagerInterface $entityManager): RedirectResponse
+    public function deleteImageId(Image $image, EntityManagerInterface $entityManager): RedirectResponse
     {
         $this->deleteImage($image, $entityManager);
         $this->addFlash('success', 'Image supprimé avec succès.');
         return $this->redirectToRoute('app_home');
+    }
+
+    public function deleteImage(Image $image, EntityManagerInterface $entityManager): void
+    {
+        $fileSystem = new FileSystemService();
+        $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
+        $entityManager->remove($image);
+        $entityManager->flush();
     }
 
     public function commentForm(Post $post): Response
@@ -198,11 +239,4 @@ class PostController extends AbstractController
         ]);
     }
 
-    public function deleteImage(Image $image, EntityManagerInterface $entityManager): void
-    {
-        $fileSystem = new FileSystemService();
-        $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
-        $entityManager->remove($image);
-        $entityManager->flush();
-    }
 }

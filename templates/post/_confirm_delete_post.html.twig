@@ -1,0 +1,18 @@
+{# Confirm delete post #}
+<div id="modal-post" class="modal fade text-start"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Supprimer cette figure ?</h5>
+                <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <p>Êtes vous certain de vouloir supprimer cette figure ?</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-secondary" data-bs-dismiss="modal">Fermer</a>
+                <a href="{{ path('post_delete', {id: post.id}) }}" class="btn btn-danger confirm-delete-button">Supprimer</a>
+            </div>
+        </div>
+    </div>
+</div>
