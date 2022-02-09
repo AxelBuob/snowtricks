@@ -55,11 +55,32 @@
         {% endfor %}
         </div>
     {% endif %}
+    <hr>
+
+    {% if post.videos is defined and post.videos is not null %}
+        <div class="d-flex flex-wrap gap-2 py-3">
+            {% for video in post.videos %}
+                <iframe id="video{{ video.id }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <script>
+                    var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                    var url = "{{ video.src }}";
+                    var match = url.match(regExp);
+                    if (match && match[2].length == 11) 
+                    {
+                        var id = match[2];
+                        var embedlink = "https://www.youtube.com/embed/" + id;
+                        var iframe = document.getElementById("video{{ video.id }}");
+                        iframe.src = embedlink;
+                    }
+                </script>
+            {% endfor %}
+        </div>
+    {% endif %}
     
     <div>
         <h3>Laisser un commentaire</h3>
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            {{ render(controller('App\\Controller\\PostController::commentForm', {'id': post.id})) }}
+            {{ render(controller('App\\Controller\\CommentController::commentForm', {'id': post.id})) }}
         {% else %}
             <p></p>
             <p>

@@ -1,0 +1,18 @@
+{# Confirm delete post image #}
+<div id="modal-image" class="modal fade text-start"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Supprimer cette image ?</h5>
+                <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <p>Êtes vous certain de vouloir supprimer cette image ?</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-secondary" data-bs-dismiss="modal">Fermer</a>
+                <a href="{{ path('delete_image', {id: image.id}) }}" class="btn btn-danger confirm-delete-button">Supprimer</a>
+            </div>
+        </div>
+    </div>
+</div>

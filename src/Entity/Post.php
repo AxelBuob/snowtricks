@@ -50,12 +50,18 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Image::class)]
     private $images;
 
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Video::class, cascade: ['persist','remove'])]
+    private $videos;
+
+    #[ORM\OneToOne(targetEntity: Image::class, cascade: ['persist', 'remove'])]
+    private $featuredImage;
 
     public function __construct()
     {
         $this->createdAt = new \DateTime();
         $this->comments = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->videos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -203,6 +209,48 @@ class Post
                 $image->setPost(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Video[]
+     */
+    public function getVideos(): Collection
+    {
+        return $this->videos;
+    }
+
+    public function addVideo(Video $video): self
+    {
+        if (!$this->videos->contains($video)) {
+            $this->videos[] = $video;
+            $video->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVideo(Video $video): self
+    {
+        if ($this->videos->removeElement($video)) {
+            // set the owning side to null (unless already changed)
+            if ($video->getPost() === $this) {
+                $video->setPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getFeaturedImage(): ?Image
+    {
+        return $this->featuredImage;
+    }
+
+    public function setFeaturedImage(?Image $featuredImage): self
+    {
+        $this->featuredImage = $featuredImage;
 
         return $this;
     }

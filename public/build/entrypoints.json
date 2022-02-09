@@ -4,18 +4,38 @@
       "js": [
         "/build/runtime.js",
         "/build/vendors-node_modules_jquery_dist_jquery_js.js",
-        "/build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-6a5154.js",
+        "/build/vendors-node_modules_core-js_internals_classof_js-node_modules_core-js_internals_export_js-no-88c317.js",
+        "/build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_internals_array--af0231.js",
+        "/build/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_bootstrap_dist_js_boo-1493c7.js",
         "/build/app.js"
       ],
       "css": [
         "/build/app.css"
       ]
     },
-    "loadMorePosts": {
+    "load_more_posts": {
       "js": [
         "/build/runtime.js",
         "/build/vendors-node_modules_jquery_dist_jquery_js.js",
-        "/build/loadMorePosts.js"
+        "/build/load_more_posts.js"
+      ]
+    },
+    "add_videos": {
+      "js": [
+        "/build/runtime.js",
+        "/build/vendors-node_modules_jquery_dist_jquery_js.js",
+        "/build/vendors-node_modules_core-js_internals_classof_js-node_modules_core-js_internals_export_js-no-88c317.js",
+        "/build/vendors-node_modules_core-js_modules_es_string_replace_js.js",
+        "/build/add_videos.js"
+      ]
+    },
+    "delete_images": {
+      "js": [
+        "/build/runtime.js",
+        "/build/vendors-node_modules_core-js_internals_classof_js-node_modules_core-js_internals_export_js-no-88c317.js",
+        "/build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_internals_array--af0231.js",
+        "/build/vendors-node_modules_core-js_modules_es_array_for-each_js-node_modules_core-js_modules_es_pro-54b034.js",
+        "/build/delete_images.js"
       ]
     }
   }

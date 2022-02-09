@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ImageRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
@@ -57,6 +55,10 @@ class Image
         return $this;
     }
 
+    public function isFeatured(): bool
+    {
+        return $this->featured;
+    }
 
     public function getUser(): ?User
     {

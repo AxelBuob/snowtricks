@@ -48,4 +48,14 @@ class CommentController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+    public function commentForm(Post $post): Response
+    {
+        $form = $this->createForm(CommentType::class);
+
+        return $this->render('post/_comment_form.html.twig', [
+            'post' => $post,
+            'form' => $form->createView()
+        ]);
+    }
 }
