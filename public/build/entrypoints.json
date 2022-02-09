@@ -12,20 +12,29 @@
         "/build/app.css"
       ]
     },
-    "loadMorePosts": {
+    "load_more_posts": {
       "js": [
         "/build/runtime.js",
         "/build/vendors-node_modules_jquery_dist_jquery_js.js",
-        "/build/loadMorePosts.js"
+        "/build/load_more_posts.js"
       ]
     },
-    "trick-form": {
+    "add_videos": {
       "js": [
         "/build/runtime.js",
         "/build/vendors-node_modules_jquery_dist_jquery_js.js",
         "/build/vendors-node_modules_core-js_internals_export_js-node_modules_core-js_internals_function-appl-5a1e08.js",
         "/build/vendors-node_modules_core-js_modules_es_string_replace_js.js",
-        "/build/trick-form.js"
+        "/build/add_videos.js"
+      ]
+    },
+    "add_images": {
+      "js": [
+        "/build/runtime.js",
+        "/build/vendors-node_modules_jquery_dist_jquery_js.js",
+        "/build/vendors-node_modules_core-js_internals_export_js-node_modules_core-js_internals_function-appl-5a1e08.js",
+        "/build/vendors-node_modules_core-js_modules_es_string_replace_js.js",
+        "/build/add_images.js"
       ]
     }
   }

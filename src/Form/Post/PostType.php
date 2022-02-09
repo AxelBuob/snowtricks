@@ -4,7 +4,6 @@ namespace App\Form\Post;
 
 use App\Entity\Post;
 use App\Entity\Category;
-use App\Entity\Image;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -14,10 +13,11 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Form\Post\VideoType;
-use Symfony\Component\Validator\Constraints\File;
 
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\File;
 
 class PostType extends AbstractType
 {
@@ -58,11 +58,28 @@ class PostType extends AbstractType
 
             ])
             ->add('images', FileType::class, [
-                'label' => false,
+                'label' => 'Images',
                 'multiple' => true,
                 'required' => false,
-                'mapped' => false
+                'mapped' => false,
+                'constraints' => [
+                    new All([
+                        new File([
+                            'maxSize' => '2M',
+                            'mimeTypes' => [
+                                'image/*'
+                            ]
+                        ])
+                    ])
+                ]
             ])
+            // ->add('images', CollectionType::class, [
+            //     'label' => 'Images',
+            //     'entry_type' => ImageType::class,
+            //     'allow_add' => true,
+            //     'allow_delete' => true,
+            //     'required' => false
+            // ])
             ->add('videos', CollectionType::class, [
                 'entry_type' => VideoType::class,
                 'allow_add' => true,
