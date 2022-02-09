@@ -23,14 +23,14 @@ security:
             custom_authenticator: App\Security\LoginFormAuthenticator
             form_login:
                 check_path:
-                    app_login
+                    security_login
                 login_path:
-                    app_login
+                    security_login
                 enable_csrf: true
                 default_target_path:
                     post_index
             logout:
-                path: app_logout
+                path: security_logout
                 # where to redirect after logout
                 target: post_index
             entry_point:

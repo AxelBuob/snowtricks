@@ -37,7 +37,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/connexion", name="app_login")
+     * @Route("/connexion", name="security_login")
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -58,14 +58,14 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/deconnexion", name="app_logout")
+     * @Route("/deconnexion", name="security_logout")
      */
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
-    #[Route('/inscription', name: 'app_register')]
+    #[Route('/inscription', name: 'security_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, LoginFormAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
     {
         if ($this->getUser()) {
@@ -89,7 +89,7 @@ class SecurityController extends AbstractController
             
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation(
-                'app_verify_email',
+                'security_verify_email',
                 $user,
                 (new TemplatedEmail())
                 ->from(new Address('buobaxel@gmail.com', 'Axel Buob'))
@@ -115,7 +115,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/verify/email', name: 'app_verify_email')]
+    #[Route('/email-verification', name: 'security_verify_email')]
     public function verifyUserEmail(Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');

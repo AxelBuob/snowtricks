@@ -47,10 +47,10 @@
                         <i class="fas fa-plus"></i>
                     </a>
                     <a href="{{ path("user_account") }}" class="btn btn-primary me-2" type="submit">Mon compte</a>
-                    <a href="{{ path("app_logout") }}" class="btn btn-outline-primary" type="submit">Déconnexion</a>
+                    <a href="{{ path("security_logout") }}" class="btn btn-outline-primary" type="submit">Déconnexion</a>
                 {% else %}
-                    <a href="{{ path("app_login") }}" class="btn btn-outline-primary me-2" type="submit">Connexion</a>
-                    <a href="{{ path("app_register") }}" class="btn btn-outline-primary" type="submit">Inscription</a>
+                    <a href="{{ path("security_login") }}" class="btn btn-outline-primary me-2" type="submit">Connexion</a>
+                    <a href="{{ path("security_register") }}" class="btn btn-outline-primary" type="submit">Inscription</a>
                 {% endif %}
                 </div>
             </div>
