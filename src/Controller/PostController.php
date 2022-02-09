@@ -27,7 +27,7 @@ class PostController extends AbstractController
         return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
     }
 
-    #[Route('/ajouter/figure', name: 'post_add'), IsGranted('ROLE_USER')]
+    #[Route('/ajouter-figure', name: 'post_add')]
     public function add(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, FileUploaderService $fileUploader): Response
     {
 
@@ -70,7 +70,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/editer/figure/{slug}', name: 'post_edit'), IsGranted('ROLE_USER')]
+    #[Route('/editer-figurer/{slug}', name: 'post_edit')]
     public function edit(Post $post, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, FileUploaderService $fileUploader): Response
     {
         $videos = new ArrayCollection();
@@ -123,7 +123,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/supprimer/figure/{id}', name: 'post_delete'), IsGranted('ROLE_USER')]
+    #[Route('/supprimer-figure/{id}', name: 'post_delete')]
     public function deletePost(Post $post, EntityManagerInterface $entityManager, FileSystemService $fileSystem): Response
     {
         if($post->getImages())
@@ -138,10 +138,10 @@ class PostController extends AbstractController
         $entityManager->remove($post);
         $entityManager->flush();
         $this->addFlash('success', 'L\'article  a bien été supprimé.');
-        return $this->RedirectToRoute('app_home');
+        return $this->RedirectToRoute('post_index');
     }
 
-    #[Route('/supprimer/image/{id}', name: 'image_delete', methods: ["DELETE"])]
+    #[Route('/supprimer-figure-image/{id}', name: 'post_image_delete', methods: ["DELETE"])]
     public function deleteImage(Image $image, Request $request, EntityManagerInterface $entityManager, FileSystemService $fileSystem): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

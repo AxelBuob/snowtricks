@@ -38,10 +38,16 @@ class UserController extends AbstractController
 
 
 
-    #[Route('/mon-compte', name: 'user_account'), IsGranted('ROLE_USER')]
-    public function index(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, ImageRepository $imageRepository): Response
+    #[Route('/mon-compte', name: 'user_account')]
+    public function index(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ImageRepository $imageRepository, 
+        SluggerInterface $slugger, 
+        FileUploaderService $fileUploader,
+        FileSystemService $fileSystem
+    ): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
         $user = $this->getUser();
         $form= $this->createForm(UserInformationType::class, $user);
         $form->handleRequest($request);
@@ -49,18 +55,11 @@ class UserController extends AbstractController
         if($form->isSubmitted() && $form->isValid())
         {
             $uploaded_image = $form->get('image')->getData();
-
-            if($uploaded_image)
-            {
-                $this->removeImage($user, $imageRepository, $entityManager);
-
-                $fileUploader = new FileUploaderService($this->getUploadsDirectory(), $slugger);
-                $uploaded_image = $fileUploader->upload($uploaded_image);
-                $image = new Image();
-                $image->setName($uploaded_image);
+            if ($uploaded_image) {
+                $this->removeImage($user, $imageRepository, $entityManager, $fileSystem);
+                $image = $fileUploader->upload($uploaded_image, $this->getUploadsDirectory(), $slugger);
                 $image->setUser($user);
                 $entityManager->persist($image);
-                $this->addFlash('success', 'Image mis à jour avec succès.');
             }
 
             $entityManager->persist($user);
@@ -77,32 +76,29 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/supprimer-mon-compte', name: 'user_delete_account'), IsGranted('ROLE_USER')]
+    #[Route('/supprimer-mon-compte', name: 'user_account_delete')]
     public function deleteAccount(EntityManagerInterface $entityManager): RedirectResponse
     {
         $user = $this->getUser();
-
         $session = new Session();
         $session->invalidate();
-
         $entityManager->remove($user);
         $entityManager->flush();
-
         $this->addFlash('info', 'Merci votre compte a bien été supprimé.');
-        return $this->redirectToRoute('app_home');
+        return $this->redirectToRoute('post_index');
     }
 
-    #[Route('/supprimer-profile-image', name: 'user_delete_image'), IsGranted('ROLE_USER')]
-    public function deleteImage(EntityManagerInterface $entityManager, ImageRepository $imageRepository): RedirectResponse
+    #[Route('/supprimer-mon-avatar', name: 'user_image_delete'), IsGranted('ROLE_USER')]
+    public function deleteImage(EntityManagerInterface $entityManager, ImageRepository $imageRepository, FileSystemService $fileSystem): RedirectResponse
     {
         $user = $this->getUser();
-        $this->removeImage($user, $imageRepository, $entityManager);
+        $this->removeImage($user, $imageRepository, $entityManager, $fileSystem);
         $entityManager->flush();
         $this->addFlash('success', 'Image supprimé avec succès.');
         return $this->redirectToRoute('user_account');
     }
 
-    #[Route('/modifier-mon-mot-de-passe', methods: ['GET', 'POST'], name: 'user_change_password'), IsGranted('ROLE_USER')]
+    #[Route('/modifier-mon-mot-de-passe', name: 'user_password_edit'), IsGranted('ROLE_USER')]
     public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
@@ -129,12 +125,11 @@ class UserController extends AbstractController
         $user->setPassword($passwordHasher->hashPassword($user, $password));
     }
 
-    private function removeImage(User $user, ImageRepository $imageRepository, EntityManagerInterface $entityManager): void
+    private function removeImage(User $user, ImageRepository $imageRepository, EntityManagerInterface $entityManager, FileSystemService $fileSystem): void
     {
         if ($user->getImage()) {
             $image_id = $user->getImage()->getId();
             $user_image = $this->getUploadsDirectory() . $user->getImage()->getName();
-            $fileSystem = new FileSystemService($user_image);
             $fileSystem->remove($user_image);
             $image = $imageRepository->find($image_id);
             $image->setUser(null);

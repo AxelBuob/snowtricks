@@ -18,7 +18,7 @@ use App\Form\Comment\CommentType;
 
 class CommentController extends AbstractController
 {
-    #[Route('/comment/{slug}/new', methods: ['POST'], name: 'comment_new')]
+    #[Route('/figure/{slug}/commentaire/ajouter', methods: ['POST'], name: 'post_comment_add')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function commentNew(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
@@ -52,7 +52,6 @@ class CommentController extends AbstractController
     public function commentForm(Post $post): Response
     {
         $form = $this->createForm(CommentType::class);
-
         return $this->render('post/_comment_form.html.twig', [
             'post' => $post,
             'form' => $form->createView()

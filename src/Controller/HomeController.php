@@ -16,7 +16,7 @@ class HomeController extends AbstractController
 {
 
     #[
-        Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'app_home')
+        Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'post_index')
     ]
     public function index(int $page, PostRepository $postRepository): Response
     {
@@ -34,7 +34,7 @@ class HomeController extends AbstractController
     }
 
     #[
-        Route('/page/{page}', name: 'loadMorePosts', requirements: ['page' => '\d+'])
+        Route('/page/{page}',methods: ['GET'], name: 'post_index_more', requirements: ['page' => '\d+'])
     ]
     public function loadMorePosts(PostRepository $postRepository, $page = 5)
     {
@@ -47,7 +47,7 @@ class HomeController extends AbstractController
 
     #[
         Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"]),
-        Route('/figure/{slug}/page/{page}', methods: ['GET'], name: 'post_show_paginated', requirements: ['slug' => "[a-z0-9\-]*", 'page' => "[1-9]\d*"]),
+        Route('/figure/{slug}/page/{page}', methods: ['GET'], name: 'post_show_more', requirements: ['slug' => "[a-z0-9\-]*", 'page' => "[1-9]\d*"]),
     ]
     public function show(Post $post, int $page, CommentRepository $commentRepository): Response
     {

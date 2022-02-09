@@ -120,7 +120,7 @@
                 <ul class="pagination">
                     {% if paginator.hasPreviousPage %}
                     <li class="page-item">
-                        <a class="page-link" aria-label="Previous" href="{{ path('post_show_paginated', {id: post.id, slug: post.slug, page: paginator.previousPage}) }}">
+                        <a class="page-link" aria-label="Previous" href="{{ path('post_show_more', {slug: post.slug, page: paginator.previousPage}) }}">
                             <span aria-hidden="true">&laquo;</span>
                             <span class="sr-only">Previous</span>
                         </a>
@@ -128,7 +128,7 @@
                     {% endif %}
                     {% if paginator.hasNextPage %}
                     <li class="page-item">
-                        <a class="page-link" aria-label="Next" href="{{ path('post_show_paginated', {id: post.id, slug: post.slug, page: paginator.nextPage}) }}">
+                        <a class="page-link" aria-label="Next" href="{{ path('post_show_more', {slug: post.slug, page: paginator.nextPage}) }}">
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Previous</span>
                         </a>

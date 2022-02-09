@@ -38,7 +38,7 @@
                         </a>        
                         <div class="card-footer">
                             <a  class="link-danger"
-                                href="{{ path('image_delete', { id: image.id }) }}"
+                                href="{{ path('post_image_delete', { id: image.id }) }}"
                                 data-delete
                                 data-token="{{ csrf_token('delete' ~ image.id )}}"
                             >Supprimer</a>

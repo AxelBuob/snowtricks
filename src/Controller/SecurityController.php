@@ -42,7 +42,7 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('post_index');
         }
 
         // get the login error if there is one
@@ -69,7 +69,7 @@ class SecurityController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, LoginFormAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('post_index');
         }
 
         $user = new User();
@@ -100,7 +100,7 @@ class SecurityController extends AbstractController
             // do anything else you need here, like send an email
             $this->addFlash('info', 'Un lien de confirmation vous a été envoyé par email.');
             
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('post_index');
 
             // return $userAuthenticator->authenticateUser(
             //     $user,

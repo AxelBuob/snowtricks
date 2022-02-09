@@ -19,7 +19,7 @@ class UserInformationType extends AbstractType
     {
         $builder
             ->add('image', FileType::class, [
-                'label' => false,
+                'label' => 'Image de profile',
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [

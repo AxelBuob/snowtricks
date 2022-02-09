@@ -1,5 +1,5 @@
 
-{{ form_start(form, {method: 'POST', action: path('comment_new', {'slug': post.slug})}) }}
+{{ form_start(form, {method: 'POST', action: path('post_comment_add', {'slug': post.slug})}) }}
 
     {{ form_row(form.content) }}
 

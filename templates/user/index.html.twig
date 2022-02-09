@@ -6,26 +6,24 @@
 
 <div class="container py-5">
 
-    <div class="w-100">
+    <div>
         <h1>Mon compte</h1>
         <p>Inscris depuis le {{ user.createdAt | date('d/m/Y') }}</p>
         {% if user.image is defined and user.image is not null %}
             <div>
-                <img src="{{ asset('uploads/user/' ~ user.image.name) }}" alt="" width="60" height="auto">
-            </div>
-            <div>
-                <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-image">Supprimer l'image</a>
+                <img src="{{ asset('uploads/user/' ~ user.image.name) }}" class="rounded-circle" width="100px" height="auto">
+                <div class="">
+                    <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-image"><i class="fa fa-trash"></i></a>
+                </div>
             </div>
         {% else %}
-            <img src="{{ asset('build/images/user.png') }}" class="rounded-circle" width="60" height="auto">
+            <img src="{{ asset('build/images/user.png') }}" width="100px" height="auto" class="rounded-circle">
         {% endif %}
         
         {{ form_start(form) }}
-
             <div class="mb-3 mt-3">
                 <div class="upload-btn-wrapper">
-                    <button class="btn btn-primary">Changer l'image</button>
-                    {{ form_row(form.image, { 'attr': {'class': null} }) }}
+                    {{ form_row(form.image) }}
                 </div>
             </div>
 
@@ -39,16 +37,14 @@
 
         {{ form_end(form) }}
         <hr>
-        <a href="{{ path('user_change_password') }}" class="btn btn-primary">Changer mon mot de passe</a>
+        <a href="{{ path('user_password_edit') }}" class="btn btn-primary">Changer mon mot de passe</a>
         <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-user">Supprimer mon compte</a>
-
     </div>
-
     {{ include('user/_confirm_delete.html.twig')}}
-
 </div>
-    
- 
 
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
