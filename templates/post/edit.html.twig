@@ -32,38 +32,23 @@
 
             <div class="d-flex flex-wrap gap-2 py-3">
             {% for image in post.images %}
-                <a  href="{{ asset('uploads/post/' ~ image.name) }}">
-                    <div class="card">
-                        <img class="" src="{{ asset('uploads/post/' ~ image.name) }}" alt="" width="200px" height="150px" style="object-fit: cover;">
+                    <div class="card" data-id={{ image.id }}>
+                        <a  href="{{ asset('uploads/post/' ~ image.name) }}">
+                            <img src="{{ asset('uploads/post/' ~ image.name) }}" width="200px" height="150px" style="object-fit: cover;">
+                        </a>        
                         <div class="card-footer">
-                            <a class="link-danger">
-                            <i class="far fa-trash-alt"></i>
-                        </a>
+                            <a  class="link-danger"
+                                href="{{ path('image_delete', { id: image.id }) }}"
+                                data-delete
+                                data-token="{{ csrf_token('delete' ~ image.id )}}"
+                            >Supprimer</a>
                         </div>
                     </div>
-                </a>
-                {{ include('post/_confirm_delete_post.html.twig')}}
             {% endfor %}
             </div>
 
             {{ form_row(form.images) }}
-            {# <div
-                class="mt-3"
-                id="image-fields-list"
-                data-image-prototype="{{ form_widget(form.images.vars.prototype)|e }}"
-                data-image-tags="{{ '<div></div>'|e }}"
-                data-image-counter="{{ form.images|length }}"
-            >
-                <h2>Images</h2>
-                {% for image in form.images %}
-                    {{ form_row(image) }}
-                {% endfor %}
-            </div>
-            <button id="add-image"
-                    type="button"
-                    class="btn btn-outline-success add-another-image-widget"
-                    data-image-selector="#image-fields-list">Ajouter des images</button>  
-       #}
+            
             {# Videos #}
             <div
                 class="mt-3"
@@ -90,6 +75,6 @@
 
 {% block javascripts %}
     {{ parent() }}
-    {# {{ encore_entry_script_tags('add_videos') }}
-    {{ encore_entry_script_tags('add_images') }} #}
+    {{ encore_entry_script_tags('add_videos') }}
+    {{ encore_entry_script_tags('delete_images') }}
 {% endblock %}

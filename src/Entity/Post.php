@@ -47,7 +47,7 @@ class Post
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
-    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Image::class, cascade: ['remove'])]
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Image::class)]
     private $images;
 
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Video::class, cascade: ['persist','remove'])]

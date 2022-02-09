@@ -1,33 +1,58 @@
-class ImageList {
-    render() {
-        const itemsHtml = this.references.map(reference => {
-            return `
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-id="${reference.id}">
-                    <span>
-                        <a href="/admin/article/references/${reference.id}/download" class="btn btn-link btn-sm"><span class="fa fa-download" style="vertical-align: middle"></span></a>
-                        <button class="js-reference-delete btn btn-link btn-sm"><span class="fa fa-trash"></span></button>
-                    </span>
-                </li>
-            `
-        });
-    }
-    constructor($element) {
-        this.$element.on('click', '.js-reference-delete', (event) => {
-            this.handleReferenceDelete(event);
-        });
-    }
-    handleReferenceDelete(event) {
-        const $li = $(event.currentTarget).closest('.list-group-item');
-        const id = $li.data('id');
-        $li.addClass('disabled');
-        $.ajax({
-            url: '/admin/article/references/' + id,
-            method: 'DELETE'
-        }).then(() => {
-            this.references = this.references.filter(reference => {
-                return reference.id !== id;
-            });
-            this.render();
-        });
-    }
-}
+document.querySelectorAll('[data-delete]').forEach(a => {
+    a.addEventListener('click', e => {
+        e.preventDefault()
+        if (confirm("Voulez-vous supprimer cette image ?")) {
+        
+            fetch(a.getAttribute('href'), {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ '_token': a.dataset.token })
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        a.parentNode.parentNode.remove()
+                    } else {
+                        alert(data.error)
+                    }
+                })
+                .catch(e => alert(e))
+        }
+    })
+})
+// window.onload = () => {
+//     // Gestion des boutons "Supprimer"
+//     let links = document.querySelectorAll("[data-delete]")
+
+//     // On boucle sur links
+//     for (link of links) {
+//         // On écoute le clic
+//         link.addEventListener("click", function (e) {
+//             // On empêche la navigation
+//             e.preventDefault()
+
+//             // On demande confirmation
+//             if (confirm("Voulez-vous supprimer cette image ?")) {
+//                 // On envoie une requête Ajax vers le href du lien avec la méthode DELETE
+//                 fetch(this.getAttribute("href"), {
+//                     method: "DELETE",
+//                     headers: {
+//                         "X-Requested-With": "XMLHttpRequest",
+//                         "Content-Type": "application/json"
+//                     },
+//                     body: JSON.stringify({ "_token": this.dataset.token })
+//                 }).then(
+//                     // On récupère la réponse en JSON
+//                     response => response.json()
+//                 ).then(data => {
+//                     if (data.success)
+//                         this.parentElement.remove()
+//                     else
+//                         alert(data.error)
+//                 }).catch(e => alert(e))
+//             }
+//         })
+//     }
+// }

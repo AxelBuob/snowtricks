@@ -4,21 +4,18 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
 use App\Entity\Post;
 use App\Entity\Image;
-
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
 use App\Form\Post\PostType;
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Service\FileUploaderService;
 use Symfony\Component\String\Slugger\SluggerInterface;
-
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Service\FileSystemService;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PostController extends AbstractController
 {
@@ -30,7 +27,7 @@ class PostController extends AbstractController
         return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
     }
 
-    #[Route('/ajouter-figure', name: 'post_add'), IsGranted('ROLE_USER')]
+    #[Route('/ajouter/figure', name: 'post_add'), IsGranted('ROLE_USER')]
     public function add(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, FileUploaderService $fileUploader): Response
     {
 
@@ -73,7 +70,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/editer-figure/{slug}', name: 'post_edit'), IsGranted('ROLE_USER')]
+    #[Route('/editer/figure/{slug}', name: 'post_edit'), IsGranted('ROLE_USER')]
     public function edit(Post $post, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, FileUploaderService $fileUploader): Response
     {
         $videos = new ArrayCollection();
@@ -126,13 +123,38 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/supprimer-figure/{id}', name: 'post_delete'), IsGranted('ROLE_USER')]
-    public function deletePost(Post $post, EntityManagerInterface $entityManager): Response
+    #[Route('/supprimer/figure/{id}', name: 'post_delete'), IsGranted('ROLE_USER')]
+    public function deletePost(Post $post, EntityManagerInterface $entityManager, FileSystemService $fileSystem): Response
     {
+        if($post->getImages())
+        {
+            foreach($post->getImages() as $image)
+            {
+                $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
+                $entityManager->remove($image);
+                $entityManager->flush();
+            }
+        }
         $entityManager->remove($post);
         $entityManager->flush();
         $this->addFlash('success', 'L\'article  a bien été supprimé.');
         return $this->RedirectToRoute('app_home');
+    }
+
+    #[Route('/supprimer/image/{id}', name: 'image_delete', methods: ["DELETE"])]
+    public function deleteImage(Image $image, Request $request, EntityManagerInterface $entityManager, FileSystemService $fileSystem): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
+
+            $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
+            $entityManager->remove($image);
+            $entityManager->flush();
+
+            return new JsonResponse(['success' => 1]);
+        } else {
+            return new JsonResponse(['error' => 'Token Invalide'], 400);
+        }
     }
 
 }

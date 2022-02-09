@@ -23,7 +23,7 @@ Encore
     .addEntry('app', './assets/app.js')
     .addEntry('load_more_posts', './assets/components/load_more_posts.js')
     .addEntry('add_videos', './assets/components/add_videos.js')
-    .addEntry('add_images', './assets/components/add_images.js')
+    .addEntry('delete_images', './assets/components/delete_images.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
