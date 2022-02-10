@@ -14,7 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Entity\Post;
 use App\Entity\Comment;
 use App\Form\Comment\CommentType;
-
+use Doctrine\Persistence\ManagerRegistry;
 
 class CommentController extends AbstractController
 {
@@ -32,13 +32,6 @@ class CommentController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($comment);
             $entityManager->flush();
-
-            // When an event is dispatched, Symfony notifies it to all the listeners
-            // and subscribers registered to it. Listeners can modify the information
-            // passed in the event and they can even modify the execution flow, so
-            // there's no guarantee that the rest of this controller will be executed.
-            // See https://symfony.com/doc/current/components/event_dispatcher.html
-            //$eventDispatcher->dispatch(new CommentCreatedEvent($comment));
 
             return $this->redirectToRoute('post_show', ['slug' => $post->getSlug()]);
         }

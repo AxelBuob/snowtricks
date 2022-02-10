@@ -36,9 +36,7 @@ class UserController extends AbstractController
         return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
     }
 
-
-
-    #[Route('/mon-compte', name: 'user_account')]
+    #[Route('/compte', name: 'user_account')]
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -76,7 +74,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/supprimer-mon-compte', name: 'user_account_delete')]
+    #[Route('/compte/supprimer', name: 'user_account_delete')]
     public function deleteAccount(EntityManagerInterface $entityManager): RedirectResponse
     {
         $user = $this->getUser();
@@ -88,7 +86,7 @@ class UserController extends AbstractController
         return $this->redirectToRoute('post_index');
     }
 
-    #[Route('/supprimer-mon-avatar', name: 'user_image_delete'), IsGranted('ROLE_USER')]
+    #[Route('/compte/supprimer/image', name: 'user_image_delete'), IsGranted('ROLE_USER')]
     public function deleteImage(EntityManagerInterface $entityManager, ImageRepository $imageRepository, FileSystemService $fileSystem): RedirectResponse
     {
         $user = $this->getUser();
@@ -98,7 +96,7 @@ class UserController extends AbstractController
         return $this->redirectToRoute('user_account');
     }
 
-    #[Route('/modifier-mon-mot-de-passe', name: 'user_password_edit'), IsGranted('ROLE_USER')]
+    #[Route('/compte/editer/mot-de-passe', name: 'user_password_edit'), IsGranted('ROLE_USER')]
     public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();

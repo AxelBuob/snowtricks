@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use App\Service\FileSystemService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 class PostController extends AbstractController
 {
 
@@ -70,9 +71,11 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/editer-figurer/{slug}', name: 'post_edit')]
+    #[Route('/editer-figure/{slug}', name: 'post_edit')]
     public function edit(Post $post, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, FileUploaderService $fileUploader): Response
     {
+        $this->denyAccessUnlessGranted('EDIT', $post);
+        
         $videos = new ArrayCollection();
         foreach ($post->getVideos() as $video) {
             $videos->add($video);
