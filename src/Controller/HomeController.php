@@ -46,20 +46,36 @@ class HomeController extends AbstractController
     }
 
     #[
-        Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"]),
-        Route('/figure/{slug}/page/{page}', methods: ['GET'], name: 'post_show_more', requirements: ['slug' => "[a-z0-9\-]*", 'page' => "[1-9]\d*"]),
+        Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"])
     ]
     public function show(Post $post, int $page, CommentRepository $commentRepository): Response
     {
         $comments = $commentRepository->findLatest($post->getId(), $page);
-
         if (!$post) {
             throw $this->createNotFoundException('Cette figure n\'éxiste pas');
         }
 
         return $this->render('post/show.html.twig', [
             'post' => $post,
-            'paginator' => $comments
+            'comments' => $comments,
+            'paginator' => json_encode([
+                'numResults' => $comments->getNumResults(),
+                'pageSize' => $comments->getPageSize(),
+                'currentPage' => $comments->getCurrentPage(),
+                'hasNextPage' => $comments->hasNextPage()
+            ])
+        ]);
+    }
+
+    #[
+        Route('/figure/{slug}/page/{page}', methods: ['GET'], name: 'post_show_more', requirements: ['slug' => "[a-z0-9\-]*", 'page' => "[1-9]\d*"]),
+    ]
+    public function loadMoreComments(CommentRepository $commentRepository, $page = 5)
+    {
+        $comments = $commentRepository->findLatest($page);
+
+        return $this->render('post/_list_comments.html.twig', [
+            'comments' => $comments
         ]);
     }
 

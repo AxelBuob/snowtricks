@@ -20,6 +20,13 @@
         "/build/load_more_posts.js"
       ]
     },
+    "load_more_comments": {
+      "js": [
+        "/build/runtime.js",
+        "/build/vendors-node_modules_jquery_dist_jquery_js.js",
+        "/build/load_more_comments.js"
+      ]
+    },
     "add_videos": {
       "js": [
         "/build/runtime.js",
