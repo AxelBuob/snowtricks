@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Entity\Post;
 use App\Entity\Category;
 use App\Entity\SiteConfiguration;
+use App\Entity\Comment;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -28,6 +29,7 @@ class AppFixtures extends Fixture
         $this->loadUsers($manager);
         $this->loadSiteConfiguration($manager);
         $this->loadPosts($manager);
+        $this->loadComments($manager);
     }
 
     private function loadCategories(ObjectManager $manager): void
@@ -88,7 +90,6 @@ class AppFixtures extends Fixture
             $post->setSlug($posts[$i]['slug']);
             $post->setDescription($posts[$i]['description']);
             $post->setUser($this->getReference('admin@snowtricks.fr'));
-            //$post->setImage($this->getReference('post.png'));
             if($i < 5)
             {
                 $post->setCategory($this->getReference('les-grabs'));
@@ -97,9 +98,27 @@ class AppFixtures extends Fixture
             {
                 $post->setCategory($this->getReference('les-rotations'));
             }
+            $this->addReference($posts[$i]['slug'], $post);
             $manager->persist($post);
         }
 
+        $manager->flush();
+    }
+
+    private function loadComments(ObjectManager $manager): void
+    {
+        foreach($this->getPostData() as $post)
+        {
+            for($i = 0; $i <=15; $i++)
+            {
+                $comment = new Comment();
+                $comment->setContent('Hello world!');
+                $comment->setCreatedAt(new \DateTime());
+                $comment->setPost($this->getReference($post['slug']));
+                $comment->setUser($this->getReference('admin@snowtricks.fr'));
+                $manager->persist($comment);
+            }
+        }
         $manager->flush();
     }
 
