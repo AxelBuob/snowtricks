@@ -51,6 +51,7 @@ class PostController extends AbstractController
                 foreach ($uploaded_images as $image) {
                     $image = $fileUploader->upload($image, $this->getUploadsDirectory(), $slugger);
                     $image->setPost($post);
+                    $image->setUser($this->getUser());
                     $entityManager->persist($image);
                 }
             }
@@ -108,6 +109,7 @@ class PostController extends AbstractController
                 foreach ($uploaded_images as $image) {
                     $image = $fileUploader->upload($image, $this->getUploadsDirectory(), $slugger);
                     $image->setPost($post);
+                    $image->setUser($this->getUser());
                     $entityManager->persist($image);
                 }
             }
@@ -129,6 +131,7 @@ class PostController extends AbstractController
     #[Route('/supprimer-figure/{id}', name: 'post_delete')]
     public function deletePost(Post $post, EntityManagerInterface $entityManager, FileSystemService $fileSystem): Response
     {
+        $this->denyAccessUnlessGranted('EDIT', $post); 
         if($post->getImages())
         {
             foreach($post->getImages() as $image)
@@ -147,6 +150,7 @@ class PostController extends AbstractController
     #[Route('/supprimer-figure-image/{id}', name: 'post_image_delete', methods: ["DELETE"])]
     public function deleteImage(Image $image, Request $request, EntityManagerInterface $entityManager, FileSystemService $fileSystem): JsonResponse
     {
+        $this->denyAccessUnlessGranted('EDIT', $image);
         $data = json_decode($request->getContent(), true);
         if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
 

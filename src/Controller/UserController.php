@@ -54,7 +54,10 @@ class UserController extends AbstractController
         {
             $uploaded_image = $form->get('image')->getData();
             if ($uploaded_image) {
-                $this->removeImage($user, $imageRepository, $entityManager, $fileSystem);
+                if($user->getImage())
+                {
+                    $this->removeImage($user->getImage(), $imageRepository, $entityManager, $fileSystem);
+                }
                 $image = $fileUploader->upload($uploaded_image, $this->getUploadsDirectory(), $slugger);
                 $image->setUser($user);
                 $entityManager->persist($image);
@@ -89,8 +92,9 @@ class UserController extends AbstractController
     #[Route('/compte/supprimer/image', name: 'user_image_delete'), IsGranted('ROLE_USER')]
     public function deleteImage(EntityManagerInterface $entityManager, ImageRepository $imageRepository, FileSystemService $fileSystem): RedirectResponse
     {
-        $user = $this->getUser();
-        $this->removeImage($user, $imageRepository, $entityManager, $fileSystem);
+        $image = $this->getUser()->getImage();
+        $this->denyAccessUnlessGranted('EDIT', $image);
+        $this->removeImage($image, $imageRepository, $entityManager, $fileSystem);
         $entityManager->flush();
         $this->addFlash('success', 'Image supprimé avec succès.');
         return $this->redirectToRoute('user_account');
@@ -123,11 +127,11 @@ class UserController extends AbstractController
         $user->setPassword($passwordHasher->hashPassword($user, $password));
     }
 
-    private function removeImage(User $user, ImageRepository $imageRepository, EntityManagerInterface $entityManager, FileSystemService $fileSystem): void
+    private function removeImage(Image $image, ImageRepository $imageRepository, EntityManagerInterface $entityManager, FileSystemService $fileSystem): void
     {
-        if ($user->getImage()) {
-            $image_id = $user->getImage()->getId();
-            $user_image = $this->getUploadsDirectory() . $user->getImage()->getName();
+        if ($image) {
+            $image_id = $image->getId();
+            $user_image = $this->getUploadsDirectory() . $image->getName();
             $fileSystem->remove($user_image);
             $image = $imageRepository->find($image_id);
             $image->setUser(null);
