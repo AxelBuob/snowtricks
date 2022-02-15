@@ -1,15 +1,19 @@
 
 $(function() {
-    var postsContainer = $('#postsContainer');
+    var commentsContainer = $('#commentsContainer');
     var loadMorebutton = $('#loadMoreButton');
     
-    var paginator = $(loadMorebutton).data(paginator);
+    var slug = $(commentsContainer).data(slug);    
+    var paginator = $(commentsContainer).data(paginator);
+
     var numResults = paginator.paginator.numResults;
     var pageSize = paginator.paginator.pageSize;
     var currentPage = paginator.paginator.currentPage;
-    
+
     maxPage = numResults / pageSize;
     var page = currentPage;
+
+
 
     loadMorebutton.on("click", function (e) {
         e.preventDefault();
@@ -20,10 +24,10 @@ $(function() {
         }
         $.ajax({
             method: "GET",
-            url: "/page/" + page,
+            url: "/figure/" + slug.slug + "/page/" + page,
             success(response) {
                 console.log(response);
-                $(postsContainer).append(response);
+                $(commentsContainer).append(response);
             }
         });
     });

@@ -45,12 +45,14 @@ class HomeController extends AbstractController
         ]);
     }
 
+
     #[
         Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"])
     ]
     public function show(Post $post, int $page, CommentRepository $commentRepository): Response
     {
         $comments = $commentRepository->findLatest($post->getId(), $page);
+
         if (!$post) {
             throw $this->createNotFoundException('Cette figure n\'éxiste pas');
         }
@@ -70,10 +72,9 @@ class HomeController extends AbstractController
     #[
         Route('/figure/{slug}/page/{page}', methods: ['GET'], name: 'post_show_more', requirements: ['slug' => "[a-z0-9\-]*", 'page' => "[1-9]\d*"]),
     ]
-    public function loadMoreComments(CommentRepository $commentRepository, $page = 5)
+    public function loadMoreComments(Post $post, CommentRepository $commentRepository, $page = 5)
     {
-        $comments = $commentRepository->findLatest($page);
-
+        $comments = $commentRepository->findLatest($post->getId(), $page);
         return $this->render('post/_list_comments.html.twig', [
             'comments' => $comments
         ]);

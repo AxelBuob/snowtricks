@@ -94,12 +94,12 @@
         {% endif %}  
     </div>
     <hr>
-    <div id="commentsContainer">
+    <div id="commentsContainer" data-slug="{{ post.slug }}" data-paginator="{{ paginator }}">
          {{ include('post/_list_comments.html.twig') }}
 
-        <div class="text-center my-3">
-            <button id="loadMoreButton" data-paginator="{{ paginator }}" class="btn btn-primary">Voir plus</button>
-        </div>
+    </div>
+    <div class="text-center my-3">
+        <button id="loadMoreButton" class="btn btn-primary">Voir plus</button>
     </div>
 </div>
 {% endblock %}
