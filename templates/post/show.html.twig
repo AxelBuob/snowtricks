@@ -94,50 +94,16 @@
         {% endif %}  
     </div>
     <hr>
-    <div>
-         {% for comment in paginator.results %}
-            <div class="card">
-                <div class="card-header">
-                    Publié le {{ comment.createdAt | date("d M Y") }} à {{ comment.createdAt | date("H:i") }}
-                </div>
-                <div class="card-body d-flex justify-content-start">
-                    {% if comment.user.image is defined and comment.user.image is not null %}
-                        <img src="{{ asset('uploads/user/' ~ comment.user.image.name) }}" alt="" width="60" height="auto">
-                    {% else %}
-                        <img src="{{ asset('build/images/user.png') }}" class="rounded-circle" width="60" height="auto">
-                    {% endif %}
-                    <blockquote class="blockquote mb-0 w-100">
-                        <p>{{ comment.content }}</p>
-                        <footer class="blockquote-footer"><cite title="Source Title">par {{ comment.user.firstName ~ ' ' ~ comment.user.lastName }}</cite></footer>
-                    </blockquote>
-                </div>
-            </div>
-        {% endfor %}
+    <div id="commentsContainer">
+         {{ include('post/_list_comments.html.twig') }}
 
-        {% if paginator.hasToPaginate %}
-        <div class="d-flex justify-content-center">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    {% if paginator.hasPreviousPage %}
-                    <li class="page-item">
-                        <a class="page-link" aria-label="Previous" href="{{ path('post_show_more', {slug: post.slug, page: paginator.previousPage}) }}">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% if paginator.hasNextPage %}
-                    <li class="page-item">
-                        <a class="page-link" aria-label="Next" href="{{ path('post_show_more', {slug: post.slug, page: paginator.nextPage}) }}">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
+        <div class="text-center my-3">
+            <button id="loadMoreButton" data-paginator="{{ paginator }}" class="btn btn-primary">Voir plus</button>
         </div>
-        {% endif %}
     </div>
 </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('load_more_comments') }}
 {% endblock %}

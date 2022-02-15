@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('load_more_posts', './assets/components/load_more_posts.js')
+    .addEntry('load_more_comments', './assets/components/load_more_comments.js')
     .addEntry('add_videos', './assets/components/add_videos.js')
     .addEntry('delete_images', './assets/components/delete_images.js')
 

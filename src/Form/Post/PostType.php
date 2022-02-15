@@ -73,13 +73,6 @@ class PostType extends AbstractType
                     ])
                 ]
             ])
-            // ->add('images', CollectionType::class, [
-            //     'label' => 'Images',
-            //     'entry_type' => ImageType::class,
-            //     'allow_add' => true,
-            //     'allow_delete' => true,
-            //     'required' => false
-            // ])
             ->add('videos', CollectionType::class, [
                 'entry_type' => VideoType::class,
                 'allow_add' => true,

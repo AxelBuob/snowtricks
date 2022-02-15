@@ -42,6 +42,7 @@ class CommentController extends AbstractController
         ]);
     }
 
+
     public function commentForm(Post $post): Response
     {
         $form = $this->createForm(CommentType::class);
