@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\Post\PostType;
+use App\Repository\ImageRepository;
+use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\FileUploaderService;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -163,5 +165,19 @@ class PostController extends AbstractController
             return new JsonResponse(['error' => 'Token Invalide'], 400);
         }
     }
+
+    #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['GET'], requirements: ['slug' => "[a-z0-9\-]*", 'id' => "[1-9]\d*"])]
+    public function setFeaturedImage(Request $request, Image $image): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        $post = $image->getPost()->getImages();
+
+
+        return new JsonResponse(['image' => $image]);
+
+
+    }   
 
 }
