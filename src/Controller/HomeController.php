@@ -58,6 +58,12 @@ class HomeController extends AbstractController
         $comments = $commentRepository->findLatest($post->getId(), $page);
         
         $featured_image = $imageRepository->findFeaturedImage($post);
+        if($featured_image)
+        {
+            $featured_image = $featured_image['0'];
+        } else {
+            $featured_image = null;
+        }
 
 
         return $this->render('post/show.html.twig', [
