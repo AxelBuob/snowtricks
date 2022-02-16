@@ -20,6 +20,7 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Post::class);
     }
 
+    // maybe not used
     public function loadPosts(int $offset, int $limit)
     {
         $qb = $this->createQueryBuilder('t')
@@ -42,8 +43,6 @@ class PostRepository extends ServiceEntityRepository
 
         return (new Paginator($qb))->paginate($page);
     }
-
-
 
     // /**
     //  * @return Post[] Returns an array of Post objects

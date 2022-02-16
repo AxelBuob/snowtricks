@@ -17,6 +17,7 @@ use App\Service\FileUploaderService;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Service\FileSystemService;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -166,18 +167,20 @@ class PostController extends AbstractController
         }
     }
 
-    #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['GET'], requirements: ['slug' => "[a-z0-9\-]*", 'id' => "[1-9]\d*"])]
-    public function setFeaturedImage(Request $request, Image $image): JsonResponse
+    #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['PUT'], requirements: ['id' => "[1-9]\d*"])]
+    public function toggleFeatured(Image $image, EntityManagerInterface $entityManager): JsonResponse
     {
-
-        $data = json_decode($request->getContent(), true);
-
-        $post = $image->getPost()->getImages();
-
-
-        return new JsonResponse(['image' => $image]);
-
-
+        if($image->isFeatured())
+        {
+            $image->setFeatured(false);
+        }
+        else
+        {
+            $image->setFeatured(true);
+        }
+        $entityManager->flush();
+        return new JsonResponse(['success' => 1]);
+        
     }   
 
 }
