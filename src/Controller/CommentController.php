@@ -15,6 +15,7 @@ use App\Entity\Post;
 use App\Entity\Comment;
 use App\Form\Comment\CommentType;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class CommentController extends AbstractController
 {
@@ -40,6 +41,20 @@ class CommentController extends AbstractController
             'post' => $post,
             'form' => $form->createView()
         ]);
+    }
+
+    #[Route('/commentaire/{id}/editer', name: 'post_comment_delete')]
+    public function commentDelete(Request $request, Comment $comment, EntityManagerInterface $entityManager): RedirectResponse
+    {
+        $this->denyAccessUnlessGranted('EDIT', $comment);
+        $post = $comment->getPost();
+
+        $entityManager->remove($comment);
+        $entityManager->flush();
+
+        $this->addFlash('success', "Commentaire supprimé avec succès.");
+        
+        return $this->redirectToRoute('post_show',['slug' => $post->getSlug()]);
     }
 
 
