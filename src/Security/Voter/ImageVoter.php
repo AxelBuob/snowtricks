@@ -9,6 +9,8 @@ use App\Entity\Image;
 use Exception;
 use Symfony\Component\Security\Core\Security;
 
+use function PHPUnit\Framework\returnSelf;
+
 class ImageVoter extends Voter
 {
 
@@ -43,8 +45,9 @@ class ImageVoter extends Voter
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case 'EDIT':
-                return $user === $subject->getUser();
-        }
+                //return $user === $subject->getUser();
+                return true;
+            }
 
         return false;
     }

@@ -10,11 +10,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\Post\PostType;
+use App\Repository\ImageRepository;
+use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\FileUploaderService;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Service\FileSystemService;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -163,5 +166,21 @@ class PostController extends AbstractController
             return new JsonResponse(['error' => 'Token Invalide'], 400);
         }
     }
+
+    #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['PUT'], requirements: ['id' => "[1-9]\d*"])]
+    public function toggleFeatured(Image $image, EntityManagerInterface $entityManager): JsonResponse
+    {
+        if($image->isFeatured())
+        {
+            $image->setFeatured(false);
+        }
+        else
+        {
+            $image->setFeatured(true);
+        }
+        $entityManager->flush();
+        return new JsonResponse(['success' => 1]);
+        
+    }   
 
 }

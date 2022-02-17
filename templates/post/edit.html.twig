@@ -36,12 +36,17 @@
                         <a  href="{{ asset('uploads/post/' ~ image.name) }}">
                             <img src="{{ asset('uploads/post/' ~ image.name) }}" width="200px" height="150px" style="object-fit: cover;">
                         </a>        
-                        <div class="card-footer">
-                            <a  class="link-danger"
+                        <div class="card-footer d-flex justify-content-between">
+                            <a  class="btn btn-sm btn-danger"
                                 href="{{ path('post_image_delete', { id: image.id }) }}"
                                 data-delete
                                 data-token="{{ csrf_token('delete' ~ image.id )}}"
                             >Supprimer</a>
+                            <a  href="#"
+                                class="btn btn-sm"
+                                data-featured="{{ image.featured }}"
+                                data-id = "{{ image.id }}"
+                            >À la une</a>
                         </div>
                     </div>
             {% endfor %}
@@ -77,4 +82,5 @@
     {{ parent() }}
     {{ encore_entry_script_tags('add_videos') }}
     {{ encore_entry_script_tags('delete_images') }}
+    {{ encore_entry_script_tags('featured_images') }}
 {% endblock %}

@@ -19,6 +19,16 @@ class ImageRepository extends ServiceEntityRepository
         parent::__construct($registry, Image::class);
     }
 
+    public function findFeaturedImage($id)
+    {
+        return $this->createQueryBuilder(alias: 'i')
+            ->where('i.post = :id')
+            ->andwhere('i.featured = 1')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findImagesByPost($id)
     {
         return $this->createQueryBuilder(alias: 'i')

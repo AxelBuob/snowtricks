@@ -1,8 +1,4 @@
-$(document).ready(function () {
-
-    $('#post_featured_image').on('change', function(e){
-        var inputFile = e.currentTarget;
-    });
+$(function () {
 
     function handleDeleteButton()
     {

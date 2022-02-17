@@ -12,10 +12,14 @@
                 </div>
             </div>
             {% endif %}
-            {% if post.image is defined and post.image is not null %}
+
+            {% if featured_image is defined and featured_image is not null %}
+                <img class="img-fluid" src="{{ asset('uploads/post/' ~ featured_image.name) }}" alt="Figure de snowboard">
+            {% elseif post.image is defined and post.image is not null %}
                     <img class="img-fluid" src="{{ asset('uploads/post/' ~ post.image.name) }}" alt="Figure de snowboard">
-                {% else %}
-                    <img class="img-fluid" src="{{ asset('build/images/post.jpeg') }} " alt="">
+            
+            {% else %}
+                    <img class="img-fluid" src="{{ asset('build/images/post.jpeg') }} " alt="Figure de snowboad">
             {% endif %}
         </div>
         <div class="border border-dark border-3 w-75 mx-auto text-center" style="position: relative; bottom: 2em;">

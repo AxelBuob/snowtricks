@@ -10,7 +10,7 @@ use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
 
 use App\Entity\Post;
-
+use App\Repository\ImageRepository;
 
 class HomeController extends AbstractController
 {
@@ -49,17 +49,27 @@ class HomeController extends AbstractController
     #[
         Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"])
     ]
-    public function show(Post $post, int $page, CommentRepository $commentRepository): Response
+    public function show(Post $post, int $page, CommentRepository $commentRepository, ImageRepository $imageRepository): Response
     {
-        $comments = $commentRepository->findLatest($post->getId(), $page);
-
         if (!$post) {
             throw $this->createNotFoundException('Cette figure n\'éxiste pas');
         }
 
+        $comments = $commentRepository->findLatest($post->getId(), $page);
+        
+        $featured_image = $imageRepository->findFeaturedImage($post);
+        if($featured_image)
+        {
+            $featured_image = $featured_image['0'];
+        } else {
+            $featured_image = null;
+        }
+
+
         return $this->render('post/show.html.twig', [
             'post' => $post,
             'comments' => $comments,
+            'featured_image' => $featured_image,
             'paginator' => json_encode([
                 'numResults' => $comments->getNumResults(),
                 'pageSize' => $comments->getPageSize(),
