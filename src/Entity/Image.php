@@ -19,12 +19,12 @@ class Image
     #[ORM\Column(type: 'boolean')]
     private $featured = false;
 
-
-    #[ORM\OneToOne(mappedBy: 'Image', targetEntity: User::class, cascade: ['persist', 'remove'])]
-    private $user;
-
     #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'images')]
     private $post;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'images')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $owner;
 
     public function getId(): ?int
     {
@@ -60,28 +60,6 @@ class Image
         return $this->featured;
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        // unset the owning side of the relation if necessary
-        if ($user === null && $this->user !== null) {
-            $this->user->setImage(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($user !== null && $user->getImage() !== $this) {
-            $user->setImage($this);
-        }
-
-        $this->user = $user;
-
-        return $this;
-    }
-
     public function getPost(): ?Post
     {
         return $this->post;
@@ -90,6 +68,18 @@ class Image
     public function setPost(?Post $post): self
     {
         $this->post = $post;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

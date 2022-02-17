@@ -19,6 +19,10 @@ class Video
     #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'videos' )]
     private $post;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'videos')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $owner;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +48,18 @@ class Video
     public function setPost(?Post $post): self
     {
         $this->post = $post;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

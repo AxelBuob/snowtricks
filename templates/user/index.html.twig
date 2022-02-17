@@ -9,9 +9,9 @@
     <div>
         <h1>Mon compte</h1>
         <p>Inscris depuis le {{ user.createdAt | date('d/m/Y') }}</p>
-        {% if user.image is defined and user.image is not null %}
+        {% if user.avatar is defined and user.avatar is not null %}
             <div>
-                <img src="{{ asset('uploads/user/' ~ user.image.name) }}" class="rounded-circle" width="100px" height="auto">
+                <img src="{{ asset('uploads/user/' ~ user.avatar.name) }}" class="" width="100px" height="auto">
                 <div class="">
                     <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-image"><i class="fa fa-trash"></i></a>
                 </div>
