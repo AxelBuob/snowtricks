@@ -11,6 +11,11 @@ use App\Entity\Comment;
 
 class CommentVoter extends Voter
 {
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+    
     protected function supports(string $attribute, $subject): bool
     {
         // replace with your own logic
