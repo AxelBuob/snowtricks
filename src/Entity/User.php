@@ -53,16 +53,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: SiteConfiguration::class, cascade: ['persist', 'remove'])]
     private $siteConfiguration;
 
-    #[ORM\OneToOne(inversedBy: 'user', targetEntity: Image::class, cascade: ['persist', 'remove'])]
-    private $Image;
-
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private $username;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Image::class, orphanRemoval: true)]
+    private $images;
+
+    #[ORM\OneToOne(targetEntity: Image::class, cascade: ['persist', 'remove'])]
+    private $avatar;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Video::class)]
+    private $videos;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->posts = new ArrayCollection();
+        $this->images = new ArrayCollection();
+        $this->videos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -265,18 +273,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getImage(): ?Image
-    {
-        return $this->Image;
-    }
-
-    public function setImage(?Image $Image): self
-    {
-        $this->Image = $Image;
-
-        return $this;
-    }
-
     public function getUsername(): ?string
     {
         return $this->username;
@@ -285,6 +281,79 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): self
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection|Image[]
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getOwner() === $this) {
+                $image->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAvatar(): ?Image
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?Image $avatar): self
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Video[]
+     */
+    public function getVideos(): Collection
+    {
+        return $this->videos;
+    }
+
+    public function addVideo(Video $video): self
+    {
+        if (!$this->videos->contains($video)) {
+            $this->videos[] = $video;
+            $video->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVideo(Video $video): self
+    {
+        if ($this->videos->removeElement($video)) {
+            // set the owning side to null (unless already changed)
+            if ($video->getOwner() === $this) {
+                $video->setOwner(null);
+            }
+        }
 
         return $this;
     }

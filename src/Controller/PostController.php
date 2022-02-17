@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\Post\PostType;
-use App\Repository\ImageRepository;
-use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\FileUploaderService;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -45,6 +43,7 @@ class PostController extends AbstractController
             foreach($post->getVideos() as $video)
             {
                 $video->setPost($post);
+                $video->setOwner($this->getUser());
                 $entityManager->persist($video);
             }
 
@@ -54,7 +53,7 @@ class PostController extends AbstractController
                 foreach ($uploaded_images as $image) {
                     $image = $fileUploader->upload($image, $this->getUploadsDirectory(), $slugger);
                     $image->setPost($post);
-                    $image->setUser($this->getUser());
+                    $image->setOwner($this->getUser());
                     $entityManager->persist($image);
                 }
             }
@@ -91,17 +90,15 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             foreach ($videos as $video) {
-                if (false === $post->getVideos()->contains($video)) {
-                    $video->getPost()->removeVideo($video);
-                    $video->setPost(null);
-                    $entityManager->persist($video);
-                    $entityManager->remove($video);
-                }
+
+                $this->deleteVideo($post, $video, $entityManager);
+                
             }
 
             foreach($post->getVideos() as $video)
             {
                 $video->setPost($post);
+                $video->setOwner($this->getUser());
                 $entityManager->persist($video);
             }
 
@@ -112,7 +109,7 @@ class PostController extends AbstractController
                 foreach ($uploaded_images as $image) {
                     $image = $fileUploader->upload($image, $this->getUploadsDirectory(), $slugger);
                     $image->setPost($post);
-                    $image->setUser($this->getUser());
+                    $image->setOwner($this->getUser());
                     $entityManager->persist($image);
                 }
             }
@@ -170,6 +167,7 @@ class PostController extends AbstractController
     #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['PUT'], requirements: ['id' => "[1-9]\d*"])]
     public function toggleFeatured(Image $image, EntityManagerInterface $entityManager): JsonResponse
     {
+        $this->denyAccessUnlessGranted('EDIT', $image);
         if($image->isFeatured())
         {
             $image->setFeatured(false);
@@ -181,6 +179,17 @@ class PostController extends AbstractController
         $entityManager->flush();
         return new JsonResponse(['success' => 1]);
         
-    }   
+    } 
+
+    public function deleteVideo($post, $video, $entityManager)
+    {
+        $this->denyAccessUnlessGranted('EDIT', $video);
+        if (false === $post->getVideos()->contains($video)) {
+            $video->getPost()->removeVideo($video);
+            $video->setPost(null);
+            $entityManager->persist($video);
+            $entityManager->remove($video);
+        }
+    }
 
 }

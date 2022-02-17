@@ -5,26 +5,25 @@ namespace App\Security\Voter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Entity\Image;
-use Exception;
+use App\Entity\Video;
 use Symfony\Component\Security\Core\Security;
 
-use function PHPUnit\Framework\returnSelf;
-
-class ImageVoter extends Voter
+class VideoVoter extends Voter
 {
+
 
     public function __construct(Security $security)
     {
         $this->security = $security;
     }
+
     
     protected function supports(string $attribute, $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['EDIT', ''])
-            && $subject instanceof \App\Entity\Image;
+        return in_array($attribute, ['EDIT'])
+            && $subject instanceof Video;
     }
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
@@ -34,8 +33,9 @@ class ImageVoter extends Voter
         if (!$user instanceof UserInterface) {
             return false;
         }
-        if (!$subject instanceof Image) {
-            throw new  Exception('Wrong type somehow passed!');
+
+        if (!$subject instanceof Video) {
+            throw new  \Exception('Wrong type somehow passed!');
         }
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
@@ -44,10 +44,9 @@ class ImageVoter extends Voter
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case 'EDIT':
-                return $user === $subject->getOwner();
-            }
-
+            case 'POST_EDIT':
+                return $suser = $subject->getOwner();
+        }
         return false;
     }
 }

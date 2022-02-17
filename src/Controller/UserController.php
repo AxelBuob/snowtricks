@@ -54,12 +54,14 @@ class UserController extends AbstractController
         {
             $uploaded_image = $form->get('image')->getData();
             if ($uploaded_image) {
-                if($user->getImage())
+                if($user->getAvatar())
                 {
-                    $this->removeImage($user->getImage(), $imageRepository, $entityManager, $fileSystem);
+                    $this->removeImage($user->getAvatar(), $imageRepository, $entityManager, $fileSystem);
                 }
+
                 $image = $fileUploader->upload($uploaded_image, $this->getUploadsDirectory(), $slugger);
-                $image->setUser($user);
+                $user->setAvatar($image);
+                $image->setOwner($user);
                 $entityManager->persist($image);
             }
 
@@ -92,8 +94,9 @@ class UserController extends AbstractController
     #[Route('/compte/supprimer/image', name: 'user_image_delete'), IsGranted('ROLE_USER')]
     public function deleteImage(EntityManagerInterface $entityManager, ImageRepository $imageRepository, FileSystemService $fileSystem): RedirectResponse
     {
-        $image = $this->getUser()->getImage();
+        $image = $this->getUser()->getAvatar();
         $this->denyAccessUnlessGranted('EDIT', $image);
+        $this->getUser()->setAvatar(null);
         $this->removeImage($image, $imageRepository, $entityManager, $fileSystem);
         $entityManager->flush();
         $this->addFlash('success', 'Image supprimé avec succès.');
@@ -134,7 +137,7 @@ class UserController extends AbstractController
             $user_image = $this->getUploadsDirectory() . $image->getName();
             $fileSystem->remove($user_image);
             $image = $imageRepository->find($image_id);
-            $image->setUser(null);
+            $image->setOwner(null);
             $entityManager->persist($image);
             $entityManager->remove($image);
         }
