@@ -44,8 +44,8 @@ class VideoVoter extends Voter
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case 'POST_EDIT':
-                return $suser = $subject->getOwner();
+            case 'EDIT':
+                return $user = $subject->getOwner();
         }
         return false;
     }
