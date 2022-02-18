@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Form\SiteconfigurationType;
+use App\Form\Admin\SiteconfigurationType;
 use App\Repository\SiteConfigurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,11 +12,27 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Image;
 use App\Service\FileSystemService;
 use App\Service\FileUploaderService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AdminController extends AbstractController
 {
+    private const UPLOAD_DIRECTORY = 'site
+    /';
+
+    private function getUploadsDirectory()
+    {
+        return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
+    }
+
     #[Route('/admin', name: 'admin')]
-    public function index(Request $request, EntityManagerInterface $entityManager, SiteConfigurationRepository $siteConfigurationRepository, FileUploaderService $fileUploaderService, FileSystemService $fileSystemService): Response
+    public function index(
+        Request $request, 
+        EntityManagerInterface $entityManager, 
+        SiteConfigurationRepository $siteConfigurationRepository, 
+        FileUploaderService $fileUploaderService,
+        SluggerInterface $slugger
+    ): Response
     {
         $siteConfiguration = $siteConfigurationRepository->getSiteConfiguration();
 
@@ -27,22 +43,19 @@ class AdminController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
-            $logo = $form->get('logo')->getData();
-            if($logo)
-            {
-                $image = new Image();
-                
-            }
-
             $entityManager->persist($siteConfiguration);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Configuration mis à jour avec succès.');
+            $this->redirectToRoute('admin');
         }
         
         
 
         return $this->render('admin/index.html.twig', [
             'title' => 'Administration',
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'site' => $siteConfiguration
         ]);
     }
 }

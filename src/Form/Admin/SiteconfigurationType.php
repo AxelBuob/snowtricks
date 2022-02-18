@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Admin;
 
 use App\Entity\SiteConfiguration;
 use App\Entity\User;
@@ -46,27 +46,6 @@ class SiteconfigurationType extends AbstractType
                     ])
                 ]
             ])
-            ->add('user', EntityType::class, [
-                'label' => 'Auteur',
-                'class' => User::class,
-                'choice_label' => 'username'
-            ])
-            
-            ->add('logo', FileType::class, [
-                'label' => 'Logo',
-                'required' => false,
-                'mapped' => false,
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
-                            'image/*'
-                        ]
-                    ])
-                ]
-            ])
-            ->add('Valider', SubmitType::class)
         ;
     }
 
