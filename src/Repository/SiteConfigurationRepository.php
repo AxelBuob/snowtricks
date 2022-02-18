@@ -19,6 +19,17 @@ class SiteConfigurationRepository extends ServiceEntityRepository
         parent::__construct($registry, SiteConfiguration::class);
     }
 
+
+    public function getSiteConfiguration($value = 1)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.id = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return SiteConfiguration[] Returns an array of SiteConfiguration objects
     //  */
