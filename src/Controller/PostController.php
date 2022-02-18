@@ -5,18 +5,13 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Entity\Post;
-use App\Entity\Image;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\Post\PostType;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\FileUploaderService;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Service\FileSystemService;
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 class PostController extends AbstractController
@@ -89,7 +84,7 @@ class PostController extends AbstractController
         $videos = new ArrayCollection();
         
         foreach ($post->getVideos() as $video) {
-            $this->videoController->add($post, $video);
+            $videos->add($video);
         }
         
         $form = $this->createForm(PostType::class, $post);
@@ -98,13 +93,11 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             foreach ($videos as $video) {
-                if (!$post->getVideos()->contains($video)) {
-                    $this->videoController->delete($video);
-                }
+
+                $this->videoController->delete($post, $video);   
             }
 
-            foreach($post->getVideos() as $video)
-            {
+            foreach ($post->getVideos() as $video) {
                 $this->videoController->add($post, $video);
             }
 

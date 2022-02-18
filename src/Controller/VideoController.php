@@ -21,16 +21,16 @@ class VideoController extends AbstractController
         $video->setPost($post);
         $video->setOwner($this->getUser());
         $this->entityManager->persist($video);
-        $this->entityManager->flush();
     }
 
-    public function delete(Video $video)
+    public function delete(Post $post, Video $video)
     {
         $this->denyAccessUnlessGranted('EDIT', $video);
-        $video->getPost()->removeVideo($video);
-        $video->setPost(null);
-        $this->entityManager->persist($video);
-        $this->entityManager->remove($video);
-        $this->entityManager->flush();
+        if (false === $post->getVideos()->contains($video)) {
+            $video->getPost()->removeVideo($video);
+            $video->setPost(null);
+            $this->entityManager->persist($video);
+            $this->entityManager->remove($video);
+        }
     }
 }
