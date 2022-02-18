@@ -10,10 +10,17 @@ use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
 
 use App\Entity\Post;
+use App\Entity\SiteConfiguration;
 use App\Repository\ImageRepository;
+use App\Repository\SiteConfigurationRepository;
 
 class HomeController extends AbstractController
 {
+
+    public function __construct(SiteConfigurationRepository $siteConfigurationRepository)
+    {
+        $this->siteConfigurationRepository = $siteConfigurationRepository;
+    }
 
     #[
         Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'post_index')
@@ -90,5 +97,23 @@ class HomeController extends AbstractController
         ]);
     }
 
+    private function getSiteConfiguration(): SiteConfiguration
+    {
+        return $this->siteConfigurationRepository->getSiteConfiguration();
+    }
+
+    public function getHeader()
+    {
+        return $this->render('header.html.twig', [
+            'site' => $this->getSiteConfiguration()
+        ]);
+    }
+
+    public function getFooter()
+    {
+        return $this->render('footer.html.twig', [
+            'site' => $this->getSiteConfiguration()
+        ]);
+    }
 
 }
