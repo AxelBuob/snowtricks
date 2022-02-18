@@ -10,10 +10,7 @@ use App\Form\User\ChangePassWordType;
 use App\Form\User\UserInformationType;
 
 use App\Repository\ImageRepository;
-
-use App\Service\FileSystemService;
 use App\Service\FileUploaderService;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +21,29 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
 class UserController extends AbstractController
 {
 
     private CONST UPLOAD_DIRECTORY = 'user/';
+
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger,
+        FileUploaderService $fileUploader,
+        ImageRepository $imageRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        ImageController $imageController
+    ){
+
+        $this->entityManager = $entityManager;
+        $this->slugger = $slugger;
+        $this->fileUploader = $fileUploader;
+        $this->imageRepository = $imageRepository;
+        $this->passwordHasher = $passwordHasher;
+        $this->imageController = $imageController;
+
+    }
 
     private function getUploadsDirectory()
     {
@@ -37,87 +51,59 @@ class UserController extends AbstractController
     }
 
     #[Route('/compte', name: 'user_account')]
-    public function index(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        ImageRepository $imageRepository, 
-        SluggerInterface $slugger, 
-        FileUploaderService $fileUploader,
-        FileSystemService $fileSystem
-    ): Response
+    public function index(Request $request): Response
     {
-        $user = $this->getUser();
-        $form= $this->createForm(UserInformationType::class, $user);
+        $form= $this->createForm(UserInformationType::class, $this->getUser());
         $form->handleRequest($request);
-
         if($form->isSubmitted() && $form->isValid())
         {
-            $uploaded_image = $form->get('image')->getData();
-            if ($uploaded_image) {
-                if($user->getAvatar())
+            if ($form->get('image')->getData()) {
+                if($this->getUser()->getAvatar())
                 {
-                    $this->removeImage($user->getAvatar(), $imageRepository, $entityManager, $fileSystem);
+                    $this->imageController->delete($this->getUser(), $this->getUser()->getAvatar(), $this->getUploadsDirectory());               
                 }
-
-                $image = $fileUploader->upload($uploaded_image, $this->getUploadsDirectory(), $slugger);
-                $user->setAvatar($image);
-                $image->setOwner($user);
-                $entityManager->persist($image);
+                $this->imageController->add($this->getUser(), $form->get('image')->getData(), $this->getUploadsDirectory());        
             }
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
+            $this->entityManager->flush();
             $this->addFlash('success', 'Compte mis à jour avec succès.');
             return $this->redirectToRoute('user_account');
         }
-
         return $this->renderForm('user/index.html.twig', [
             'title' => 'Mon compte',
-            'user' => $user,
+            'user' => $this->getUser(),
             'form' => $form
         ]);
     }
 
     #[Route('/compte/supprimer', name: 'user_account_delete')]
-    public function deleteAccount(EntityManagerInterface $entityManager): RedirectResponse
+    public function deleteAccount(): RedirectResponse
     {
         $user = $this->getUser();
         $session = new Session();
         $session->invalidate();
-        $entityManager->remove($user);
-        $entityManager->flush();
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
         $this->addFlash('info', 'Merci votre compte a bien été supprimé.');
         return $this->redirectToRoute('post_index');
     }
 
-    #[Route('/compte/supprimer/image', name: 'user_image_delete'), IsGranted('ROLE_USER')]
-    public function deleteImage(EntityManagerInterface $entityManager, ImageRepository $imageRepository, FileSystemService $fileSystem): RedirectResponse
+    #[Route('/compte/supprimer/image/', name: 'user_image_delete')]
+    public function deleteImage(): RedirectResponse
     {
-        $image = $this->getUser()->getAvatar();
-        $this->denyAccessUnlessGranted('EDIT', $image);
-        $this->getUser()->setAvatar(null);
-        $this->removeImage($image, $imageRepository, $entityManager, $fileSystem);
-        $entityManager->flush();
+        $this->imageController->delete($this->getUser(), $this->getUser()->getAvatar(), $this->getUploadsDirectory());
         $this->addFlash('success', 'Image supprimé avec succès.');
         return $this->redirectToRoute('user_account');
     }
 
-    #[Route('/compte/editer/mot-de-passe', name: 'user_password_edit'), IsGranted('ROLE_USER')]
-    public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    #[Route('/compte/editer/mot-de-passe', name: 'user_password_edit')]
+    public function changePassword(): Response
     {
-        $user = $this->getUser();
         $form = $this->createForm(ChangePasswordType::class)->add('save', SubmitType::class, ['label' => 'Modifier mon mot de passe']);
-        $form->handleRequest($request);
+        $form->handleRequest($this->request);
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $this->hashPassword($user, $form->get('newPassword')->getData(), $passwordHasher);
-
-            $entityManager->flush();
-            $this->addFlash(
-                'success',
-                'Votre mot de passe a bien été mis à jour.'
-            );
+            $this->hashPassword($this->getUser(), $form->get('newPassword')->getData(), $this->passwordHasher);
+            $this->entityManager->flush();
+            $this->addFlash('success','Votre mot de passe a bien été mis à jour.');
             return $this->redirectToRoute('app_logout');
         }
         return $this->render('user/changePassword.html.twig', [
@@ -128,19 +114,6 @@ class UserController extends AbstractController
     private function hashPassword(User $user,string $password, UserPasswordHasherInterface $passwordHasher): void
     {
         $user->setPassword($passwordHasher->hashPassword($user, $password));
-    }
-
-    private function removeImage(Image $image, ImageRepository $imageRepository, EntityManagerInterface $entityManager, FileSystemService $fileSystem): void
-    {
-        if ($image) {
-            $image_id = $image->getId();
-            $user_image = $this->getUploadsDirectory() . $image->getName();
-            $fileSystem->remove($user_image);
-            $image = $imageRepository->find($image_id);
-            $image->setOwner(null);
-            $entityManager->persist($image);
-            $entityManager->remove($image);
-        }
     }
 
 }

@@ -19,7 +19,8 @@
             
             <div class="text-end">
                 {% if app.request.attributes.get('_route') == 'post_edit' %}
-                    <a data-bs-toggle="modal" data-bs-target="#modal-post" class="btn btn-outline-danger" href="{{ path('post_delete', {id: post.id}) }}">Supprimer</a>
+                    <a href="{{ path('post_show', {'slug': post.slug}) }}" class="btn btn-outline-success">Voir</a>
+                    <a data-bs-toggle="modal" data-bs-target="#modal-post" class="btn btn-outline-danger">Supprimer</a>
                     {{ include('post/_confirm_delete_post.html.twig')}}
                 {% endif %}
                 <button type="submit" class="btn btn-primary">Enregistrer</button>

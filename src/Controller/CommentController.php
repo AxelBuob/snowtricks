@@ -10,11 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
 use App\Entity\Post;
 use App\Entity\Comment;
 use App\Form\Comment\CommentType;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class CommentController extends AbstractController
@@ -44,7 +42,7 @@ class CommentController extends AbstractController
     }
 
     #[Route('/commentaire/{id}/editer', name: 'post_comment_delete')]
-    public function commentDelete(Request $request, Comment $comment, EntityManagerInterface $entityManager): RedirectResponse
+    public function commentDelete(Comment $comment, EntityManagerInterface $entityManager): RedirectResponse
     {
         $this->denyAccessUnlessGranted('EDIT', $comment);
         $post = $comment->getPost();

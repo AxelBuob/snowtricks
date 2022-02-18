@@ -8,7 +8,9 @@
             <div class="d-flex justify-content-end">
                 <div class="position-absolute  m-1 p-2 border border-2 border-primary" style="">
                     <a href="{{ path('post_edit', {slug: post.slug} ) }}"><i class="fas fa-pencil-alt me-2 fa-2x"></i></a>
-                    <a class="link-danger" href="{{ path('post_delete', {id: post.id}) }}"><i class="far fa-trash-alt fa-2x"></i></a>
+                    <a class="link-danger" href="{{ path('post_delete', {id: post.id}) }}"></a>
+                    <a data-bs-toggle="modal" data-bs-target="#modal-post" class="btn btn-danger"><i class="far fa-trash-alt fa-2x"></i></a>
+                    {{ include('post/_confirm_delete_post.html.twig')}}
                 </div>
             </div>
             {% endif %}

@@ -21,8 +21,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 class PostController extends AbstractController
 {
-
     private const UPLOAD_DIRECTORY = 'post/';
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger,
+        VideoController $videoController,
+        ImageController $imageController
+    )
+    {
+        $this->entityManager = $entityManager;
+        $this->slugger = $slugger;
+        $this->imageController = $imageController;
+        $this->videoController = $videoController;
+    }
 
     private function getUploadsDirectory()
     {
@@ -30,7 +42,7 @@ class PostController extends AbstractController
     }
 
     #[Route('/ajouter-figure', name: 'post_add')]
-    public function add(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, FileUploaderService $fileUploader): Response
+    public function add(Request $request): Response
     {
 
         $post = new Post();
@@ -42,28 +54,23 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             foreach($post->getVideos() as $video)
             {
-                $video->setPost($post);
-                $video->setOwner($this->getUser());
-                $entityManager->persist($video);
+                $this->videoController->add($post, $video);
             }
 
             $uploaded_images = $form->get('images')->getData();
 
             if ($uploaded_images) {
                 foreach ($uploaded_images as $image) {
-                    $image = $fileUploader->upload($image, $this->getUploadsDirectory(), $slugger);
-                    $image->setPost($post);
-                    $image->setOwner($this->getUser());
-                    $entityManager->persist($image);
+                    $this->imageController->add($this->getUser(), $image, $this->getUploadsDirectory(), $post);
                 }
             }
 
             $post->setCreatedAt(new \DateTime());
             $post->setUser($this->getUser());
-            $post->setSlug($slugger->slug($form->get('name')->getData())->lower());
+            $post->setSlug($this->slugger->slug($form->get('name')->getData())->lower());
 
-            $entityManager->persist($post);
-            $entityManager->flush();
+            $this->entityManager->persist($post);
+            $this->entityManager->flush();
             $this->addFlash('success', 'Figure ajouté avec succès.');
             return $this->redirectToRoute('post_show', ['slug' => $post->getSlug()]);
         }
@@ -75,48 +82,42 @@ class PostController extends AbstractController
     }
 
     #[Route('/editer-figure/{slug}', name: 'post_edit')]
-    public function edit(Post $post, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, FileUploaderService $fileUploader): Response
+    public function edit(Post $post, Request $request): Response
     {
         $this->denyAccessUnlessGranted('EDIT', $post);
-        
-        $videos = new ArrayCollection();
-        foreach ($post->getVideos() as $video) {
-            $videos->add($video);
-        }
 
+        $videos = new ArrayCollection();
+        
+        foreach ($post->getVideos() as $video) {
+            $this->videoController->add($post, $video);
+        }
+        
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             foreach ($videos as $video) {
-
-                $this->deleteVideo($post, $video, $entityManager);
-                
+                if (!$post->getVideos()->contains($video)) {
+                    $this->videoController->delete($video);
+                }
             }
 
             foreach($post->getVideos() as $video)
             {
-                $video->setPost($post);
-                $video->setOwner($this->getUser());
-                $entityManager->persist($video);
+                $this->videoController->add($post, $video);
             }
-
 
             $uploaded_images = $form->get('images')->getData();
             
             if ($uploaded_images) {
                 foreach ($uploaded_images as $image) {
-                    $image = $fileUploader->upload($image, $this->getUploadsDirectory(), $slugger);
-                    $image->setPost($post);
-                    $image->setOwner($this->getUser());
-                    $entityManager->persist($image);
+                    $this->imageController->add($this->getUser(), $image, $this->getUploadsDirectory(), $post);
                 }
             }
 
             $post->setUpdatedAt(new \DateTime());
-            $entityManager->persist($post);
-            $entityManager->flush();
+            $this->entityManager->flush();
             $this->addFlash('success', 'Figure modifié avec succès.');
             return $this->redirectToRoute('post_edit', ['slug' => $post->getSlug()]);
         }
@@ -129,67 +130,22 @@ class PostController extends AbstractController
     }
 
     #[Route('/supprimer-figure/{id}', name: 'post_delete')]
-    public function deletePost(Post $post, EntityManagerInterface $entityManager, FileSystemService $fileSystem): Response
+    public function delete(Post $post): Response
     {
         $this->denyAccessUnlessGranted('EDIT', $post); 
         if($post->getImages())
         {
             foreach($post->getImages() as $image)
             {
-                $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
-                $entityManager->remove($image);
+                $this->imageController->delete($this->getUser(), $image, $this->getUploadsDirectory());
             }
-            $entityManager->flush();
+            $this->entityManager->flush();
         }
-        $entityManager->remove($post);
-        $entityManager->flush();
+        $this->entityManager->remove($post);
+        $this->entityManager->flush();
         $this->addFlash('success', 'L\'article  a bien été supprimé.');
         return $this->RedirectToRoute('post_index');
     }
 
-    #[Route('/supprimer-figure-image/{id}', name: 'post_image_delete', methods: ["DELETE"])]
-    public function deleteImage(Image $image, Request $request, EntityManagerInterface $entityManager, FileSystemService $fileSystem): JsonResponse
-    {
-        $this->denyAccessUnlessGranted('EDIT', $image);
-        $data = json_decode($request->getContent(), true);
-        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
-
-            $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
-            $entityManager->remove($image);
-            $entityManager->flush();
-
-            return new JsonResponse(['success' => 1]);
-        } else {
-            return new JsonResponse(['error' => 'Token Invalide'], 400);
-        }
-    }
-
-    #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['PUT'], requirements: ['id' => "[1-9]\d*"])]
-    public function toggleFeatured(Image $image, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $this->denyAccessUnlessGranted('EDIT', $image);
-        if($image->isFeatured())
-        {
-            $image->setFeatured(false);
-        }
-        else
-        {
-            $image->setFeatured(true);
-        }
-        $entityManager->flush();
-        return new JsonResponse(['success' => 1]);
-        
-    } 
-
-    public function deleteVideo($post, $video, $entityManager)
-    {
-        $this->denyAccessUnlessGranted('EDIT', $video);
-        if (false === $post->getVideos()->contains($video)) {
-            $video->getPost()->removeVideo($video);
-            $video->setPost(null);
-            $entityManager->persist($video);
-            $entityManager->remove($video);
-        }
-    }
 
 }
