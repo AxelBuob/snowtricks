@@ -138,8 +138,8 @@ class PostController extends AbstractController
             {
                 $fileSystem->remove($this->getUploadsDirectory() . $image->getName());
                 $entityManager->remove($image);
-                $entityManager->flush();
             }
+            $entityManager->flush();
         }
         $entityManager->remove($post);
         $entityManager->flush();
