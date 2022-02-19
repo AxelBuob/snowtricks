@@ -69,7 +69,7 @@ class ImageController extends AbstractController
     {
         $this->denyAccessUnlessGranted('EDIT', $image);
         $data = json_decode($request->getContent(), true);
-        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
+        if ($this->isCsrfTokenValid('delete', $data['_token'])) {
 
             $this->delete($this->getuser(), $image, '/post');
             return new JsonResponse(['success' => 1]);
