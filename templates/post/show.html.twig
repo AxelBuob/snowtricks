@@ -48,34 +48,51 @@
             dans la catégorie <strong>{{ post.category.name }}</strong>
         </p>
     </div>
-    <hr>
-    
-    {% if post.images is defined and post.images is not null %}
-        <div class="d-flex flex-wrap gap-2 py-3">
-        {% for image in post.images %}
-            <a class="" href="{{ asset('uploads/post/' ~ image.name) }}">
-                <div>
-                    <img class="d-block" src="{{ asset('uploads/post/' ~ image.name) }}" alt="" width="200px" height="150px" style="object-fit: cover;">
-                </div>
-            </a>
-        {% endfor %}
-        </div>
-    {% endif %}
-    <hr>
+    {% if post.images is defined and post.images is not null and post.images | length > 0 %}
+        <a      
+        id="show-images"
+        class="btn btn-primary" 
+        type="button" 
+        data-bs-toggle="collapse" 
+        data-bs-target="#collapse-images" 
+        aria-expanded="false" 
+        aria-controls="collapse-images">Voir les photos</a>
 
-    {% if post.videos is defined and post.videos is not null %}
-        <div class="d-flex flex-wrap gap-2 py-3">
-            {% for video in post.videos %}
-                <iframe id="video{{ video.id }}" 
-                        data-url={{ video.src }}
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen></iframe>
-            {% endfor %}
+        <div id="collapse-images">
+            <div class="d-flex flex-wrap gap-2 py-3">
+                {% for image in post.images %}
+                    <a href="{{ asset('uploads/post/' ~ image.name) }}">
+                        <img class="d-block" src="{{ asset('uploads/post/' ~ image.name) }}" alt="" width="200px" height="150px" style="object-fit: cover;">
+                    </a>
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
+    <br>
+    {% if post.videos is defined and post.videos is not null  and post.videos | length > 0 %}
+        <a      
+        id="show-videos"
+        class="btn btn-primary" 
+        type="button" 
+        data-bs-toggle="collapse" 
+        data-bs-target="#collapse-videos" 
+        aria-expanded="false" 
+        aria-controls="collapse-videos">Voir les videos</a>
+
+        <div id="collapse-videos">
+            <div class="d-flex flex-wrap gap-2 py-3">
+                {% for video in post.videos %}
+                    <iframe id="video{{ video.id }}" 
+                            data-url={{ video.src }}
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                {% endfor %}
+            </div>
+        </div>  
+    {% endif %}
     
-    <div>
+    <div class="mt-3">
         <h3>Laisser un commentaire</h3>
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
             {{ render(controller('App\\Controller\\CommentController::commentForm', {'id': post.id})) }}
@@ -105,4 +122,5 @@
     {{ parent() }}
     {{ encore_entry_script_tags('load_more_comments') }}
     {{ encore_entry_script_tags('embed_videos') }}
+    {{ encore_entry_script_tags('collapse_small_screen') }}
 {% endblock %}
