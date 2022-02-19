@@ -8,6 +8,13 @@
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
     <h1>{{ title }}</h1>
-    {{ form(form) }}
+    {{ form_start(form) }}
+            {{form_row(form.username)}}
+            {{form_row(form.email)}}
+            {{form_row(form.first_name)}}
+            {{form_row(form.last_name)}}
+            {{form_row(form.password)}}
+            <button class="btn btn-primary" type="submit">Inscription</button>
+    {{ form_end(form)}}
     </div>
 {% endblock %}
