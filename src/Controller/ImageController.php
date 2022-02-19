@@ -72,12 +72,10 @@ class ImageController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
 
             $this->delete($this->getuser(), $image, '/post');
-            $this->entityManager->remove($image);
-            $this->entityManager->flush();
-
             return new JsonResponse(['success' => 1]);
         } else {
             return new JsonResponse(['error' => 'Token Invalide'], 400);
         }
     }
+
 }
