@@ -27,6 +27,7 @@ Encore
     .addEntry('delete_images', './assets/components/delete_images.js')
     .addEntry('featured_images', './assets/components/featured_images.js')
     .addEntry('embed_videos', './assets/components/embed_videos.js')
+    .addEntry('collapse_small_screen', './assets/components/collapse_small_screen.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
