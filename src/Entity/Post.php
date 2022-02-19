@@ -53,9 +53,6 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Video::class, cascade: ['persist','remove'])]
     private $videos;
 
-    #[ORM\OneToOne(targetEntity: Image::class, cascade: ['persist', 'remove'])]
-    private $featuredImage;
-
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -239,18 +236,6 @@ class Post
                 $video->setPost(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getFeaturedImage(): ?Image
-    {
-        return $this->featuredImage;
-    }
-
-    public function setFeaturedImage(?Image $featuredImage): self
-    {
-        $this->featuredImage = $featuredImage;
 
         return $this;
     }

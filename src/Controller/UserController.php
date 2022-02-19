@@ -96,15 +96,15 @@ class UserController extends AbstractController
     }
 
     #[Route('/compte/editer/mot-de-passe', name: 'user_password_edit')]
-    public function changePassword(): Response
+    public function changePassword(Request $request): Response
     {
         $form = $this->createForm(ChangePasswordType::class)->add('save', SubmitType::class, ['label' => 'Modifier mon mot de passe']);
-        $form->handleRequest($this->request);
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->hashPassword($this->getUser(), $form->get('newPassword')->getData(), $this->passwordHasher);
             $this->entityManager->flush();
             $this->addFlash('success','Votre mot de passe a bien été mis à jour.');
-            return $this->redirectToRoute('app_logout');
+            return $this->redirectToRoute('security_logout');
         }
         return $this->render('user/changePassword.html.twig', [
             'form' => $form->createView(),

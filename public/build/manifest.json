@@ -6,6 +6,7 @@
   "build/add_videos.js": "/build/add_videos.js",
   "build/delete_images.js": "/build/delete_images.js",
   "build/featured_images.js": "/build/featured_images.js",
+  "build/embed_videos.js": "/build/embed_videos.js",
   "build/runtime.js": "/build/runtime.js",
   "build/vendors-node_modules_jquery_dist_jquery_js.js": "/build/vendors-node_modules_jquery_dist_jquery_js.js",
   "build/vendors-node_modules_core-js_internals_classof_js-node_modules_core-js_internals_export_js-no-88c317.js": "/build/vendors-node_modules_core-js_internals_classof_js-node_modules_core-js_internals_export_js-no-88c317.js",
@@ -14,5 +15,8 @@
   "build/vendors-node_modules_core-js_modules_es_array_for-each_js-node_modules_core-js_modules_es_pro-54b034.js": "/build/vendors-node_modules_core-js_modules_es_array_for-each_js-node_modules_core-js_modules_es_pro-54b034.js",
   "build/vendors-node_modules_core-js_modules_es_string_replace_js.js": "/build/vendors-node_modules_core-js_modules_es_string_replace_js.js",
   "build/images/post.jpeg": "/build/images/post.5194caca.jpeg",
-  "build/images/user.png": "/build/images/user.68cb0bff.png"
+  "build/images/user.png": "/build/images/user.68cb0bff.png",
+  "build/vendors-node_modules_core-js_internals_classof_js-node_modules_core-js_internals_export_js-no-9e73f9.js": "/build/vendors-node_modules_core-js_internals_classof_js-node_modules_core-js_internals_export_js-no-9e73f9.js",
+  "build/vendors-node_modules_core-js_internals_advance-string-index_js-node_modules_core-js_internals-bed4a0.js": "/build/vendors-node_modules_core-js_internals_advance-string-index_js-node_modules_core-js_internals-bed4a0.js",
+  "build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_internals_array--0fe104.js": "/build/vendors-node_modules_core-js_internals_a-constructor_js-node_modules_core-js_internals_array--0fe104.js"
 }

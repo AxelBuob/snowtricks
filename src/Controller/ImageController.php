@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Image;
 use App\Entity\User;
 use App\Entity\Post;
+use App\Repository\ImageRepository;
 use App\Service\FileUploaderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,11 +21,13 @@ class ImageController extends AbstractController
         EntityManagerInterface $entityManager,
         FileUploaderService $fileUploader,
         SluggerInterface $slugger,
+        ImageRepository $imageRepository,
     )
     {
         $this->entityManager = $entityManager;
         $this->fileUploader = $fileUploader;
         $this->slugger = $slugger;
+        $this->imageRepository = $imageRepository;
     }
 
     public function delete(User $user, Image $image, $upload_directory)

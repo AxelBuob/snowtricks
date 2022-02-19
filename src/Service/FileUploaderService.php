@@ -30,7 +30,7 @@ class FileUploaderService
             $image = new Image();
             $image->setName($filename);
         } catch (FileException $e) {
-            // ... handle exception if something happens during file upload
+            return $e->getMessage();
         }
 
         return $image;

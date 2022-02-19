@@ -5,14 +5,14 @@
             <a class="link-danger" href="{{ path('post_comment_delete', {'id': comment.id })}}">Supprimer</a>
         </div>
         <div class="card-body d-flex justify-content-start">
-            {% if comment.user.image is defined and comment.user.image is not null %}
-                <img src="{{ asset('uploads/user/' ~ comment.user.image.name) }}" alt="" width="60" height="auto">
+            {% if comment.user.avatar is defined and comment.user.avatar is not null %}
+                <img src="{{ asset('uploads/user/' ~ comment.user.avatar.name) }}" alt="" width="60" height="auto">
             {% else %}
                 <img src="{{ asset('build/images/user.png') }}" class="rounded-circle" width="60" height="auto">
             {% endif %}
             <blockquote class="blockquote mb-0 w-100">
                 <p>{{ comment.content }}</p>
-                <footer class="blockquote-footer"><cite title="Source Title">par {{ comment.user.firstName ~ ' ' ~ comment.user.lastName }}</cite></footer>
+                <footer class="blockquote-footer"><cite title="Source Title">par {{ comment.user.fullName }}</cite></footer>
             </blockquote>
         </div>
     </div>

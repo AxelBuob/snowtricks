@@ -39,24 +39,24 @@ class RegistrationFormType extends AbstractType
                     new Email()
                 ]
             ])
-            // ->add('first_name', TextType::class, [
-            //     'label' => 'Prénom',
-            //     'constraints' => [
-            //         new NotBlank(),
-            //         new Length(50, 2)
-            //     ]
-            // ])
-            // ->add('last_name', TextType::class, [
-            //     'label' => 'Nom',
-            //     'constraints' => [
-            //         new NotBlank(),
-            //         new Length(50, 2)
-            //     ]
-            // ])
+            ->add('first_name', TextType::class, [
+                'label' => 'Prénom',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(50, 2)
+                ]
+            ])
+            ->add('last_name', TextType::class, [
+                'label' => 'Nom',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(50, 2)
+                ]
+            ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'constraints' => [
-                    //new Regex("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/", message: "Votre mot de passe doit contenir au minimum 8 caractères, dont une lettre et un chiffre")
+                    new Regex("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/", message: "Votre mot de passe doit contenir au minimum 8 caractères, dont une lettre et un chiffre")
                 ],
                 'required' => true,
                 'invalid_message' => 'Les deux mots de passes ne sont pas identiques',
