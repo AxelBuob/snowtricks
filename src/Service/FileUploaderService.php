@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Image;
-use Exception;
 use Symfony\Component\Filesystem\Filesystem;
 
 class FileUploaderService
@@ -31,7 +30,7 @@ class FileUploaderService
             $image = new Image();
             $image->setName($filename);
         } catch (FileException $e) {
-            // ... handle exception if something happens during file upload
+            return $e->getMessage();
         }
 
         return $image;

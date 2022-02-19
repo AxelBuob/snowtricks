@@ -8,7 +8,9 @@
             <div class="d-flex justify-content-end">
                 <div class="position-absolute  m-1 p-2 border border-2 border-primary" style="">
                     <a href="{{ path('post_edit', {slug: post.slug} ) }}"><i class="fas fa-pencil-alt me-2 fa-2x"></i></a>
-                    <a class="link-danger" href="{{ path('post_delete', {id: post.id}) }}"><i class="far fa-trash-alt fa-2x"></i></a>
+                    <a class="link-danger" href="{{ path('post_delete', {id: post.id}) }}"></a>
+                    <a data-bs-toggle="modal" data-bs-target="#modal-post" class="btn btn-danger"><i class="far fa-trash-alt fa-2x"></i></a>
+                    {{ include('post/_confirm_delete_post.html.twig')}}
                 </div>
             </div>
             {% endif %}
@@ -42,7 +44,7 @@
                 Publié le <b>{{ post.createdAt | date("d M Y") }}</b>
                 à <b>{{ post.createdAt | date('H:i') }}</b>
             {% endif %}
-            par <em>{{ post.user.firstName }} {{ post.user.lastName }}</em> 
+            par <em>{{ post.user.fullName }}</em> 
             dans la catégorie <strong>{{ post.category.name }}</strong>
         </p>
     </div>
@@ -64,19 +66,11 @@
     {% if post.videos is defined and post.videos is not null %}
         <div class="d-flex flex-wrap gap-2 py-3">
             {% for video in post.videos %}
-                <iframe id="video{{ video.id }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <script>
-                    var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                    var url = "{{ video.src }}";
-                    var match = url.match(regExp);
-                    if (match && match[2].length == 11) 
-                    {
-                        var id = match[2];
-                        var embedlink = "https://www.youtube.com/embed/" + id;
-                        var iframe = document.getElementById("video{{ video.id }}");
-                        iframe.src = embedlink;
-                    }
-                </script>
+                <iframe id="video{{ video.id }}" 
+                        data-url={{ video.src }}
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>
             {% endfor %}
         </div>
     {% endif %}
@@ -97,17 +91,18 @@
             </p>
         {% endif %}  
     </div>
-    <hr>
     <div id="commentsContainer" data-slug="{{ post.slug }}" data-paginator="{{ paginator }}">
          {{ include('post/_list_comments.html.twig') }}
-
     </div>
+    {% if comments.hasNextPage %}
     <div class="text-center my-3">
         <button id="loadMoreButton" class="btn btn-primary">Voir plus</button>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
     {{ encore_entry_script_tags('load_more_comments') }}
+    {{ encore_entry_script_tags('embed_videos') }}
 {% endblock %}

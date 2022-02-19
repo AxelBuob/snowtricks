@@ -5,10 +5,8 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
-
 use App\Entity\Post;
 use App\Entity\SiteConfiguration;
 use App\Repository\ImageRepository;
@@ -65,13 +63,6 @@ class HomeController extends AbstractController
         $comments = $commentRepository->findLatest($post->getId(), $page);
         
         $featured_image = $imageRepository->findFeaturedImage($post);
-        if($featured_image)
-        {
-            $featured_image = $featured_image['0'];
-        } else {
-            $featured_image = null;
-        }
-
 
         return $this->render('post/show.html.twig', [
             'post' => $post,

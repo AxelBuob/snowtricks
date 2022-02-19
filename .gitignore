@@ -27,15 +27,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/node,symfony,yarn,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,symfony,yarn,macos
 
-### macOS ###
-# General
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
 
 # Thumbnails
 ._*

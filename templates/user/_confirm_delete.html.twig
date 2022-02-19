@@ -30,7 +30,9 @@
             </div>
             <div class="modal-footer">
                 <a class="btn btn-secondary" data-bs-dismiss="modal">Fermer</a>
-                <a href="{{ path('user_image_delete') }}" class="btn btn-danger confirm-delete-button">Supprimer</a>
+                {% if user.avatar is defined and user.avatar is not null %}
+                    <a href="{{ path('user_image_delete', { 'id': user.avatar.id }) }}" class="btn btn-danger confirm-delete-button">Supprimer</a>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -26,7 +26,7 @@ class ImageRepository extends ServiceEntityRepository
             ->andwhere('i.featured = 1')
             ->setParameter('id', $id)
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
     }
 
     public function findImagesByPost($id)
