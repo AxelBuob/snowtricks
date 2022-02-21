@@ -46,6 +46,11 @@ class SiteconfigurationType extends AbstractType
                     ])
                 ]
             ])
+            ->add('image', FileType::class, [
+                'label' => 'Logo',
+                'required' => false,
+                'mapped' => false
+            ])
         ;
     }
 
