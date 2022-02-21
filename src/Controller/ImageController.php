@@ -42,6 +42,7 @@ class ImageController extends AbstractController
     public function add(User $user, $image, $upload_directory, Post $post = null)
     {
         $image = $this->fileUploader->upload($image, $upload_directory, $this->slugger);
+
         $user->setAvatar($image);
         $image->setOwner($user);
         if($post)
@@ -49,6 +50,7 @@ class ImageController extends AbstractController
             $image->setPost($post);
         }
         $this->entityManager->flush();
+        return $image;
     }
 
     #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['PUT'], requirements: ['id' => "[1-9]\d*"])]
