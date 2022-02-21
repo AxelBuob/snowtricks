@@ -43,4 +43,3 @@ Assets management
 
 ## Symfony insight report
 - https://insight.symfony.com/projects/06cee59b-6e5a-4266-a8e2-be595cb0258f/analyses/58
-- 
