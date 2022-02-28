@@ -94,19 +94,20 @@ class ImageController extends AbstractController
 
     #[Route('/supprimer-figure-image/{id}', name: 'post_image_delete', methods: ["DELETE"])]
     /**
-     * Delete an post image
+     * Delete an post image in ajax
      *
      * @param Image $image
      * @param Request $request
      * @return JsonResponse
      */
-    public function deleteImage(Image $image, Request $request): JsonResponse
+    public function deleteImage(Image $image, Request $request, PostController $postController): JsonResponse
     {
         $this->denyAccessUnlessGranted('EDIT', $image);
+
+        $upload_directory = $postController->getUploadsDirectory();
         $data = json_decode($request->getContent(), true);
         if ($this->isCsrfTokenValid('delete', $data['_token'])) {
-
-            $this->delete($this->getuser(), $image, '/post');
+            $this->delete($this->getuser(), $image, $upload_directory);
             return new JsonResponse(['success' => 1]);
         } else {
             return new JsonResponse(['error' => 'Token Invalide'], 400);
