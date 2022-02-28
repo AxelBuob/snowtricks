@@ -44,7 +44,7 @@ class PostController extends AbstractController
      *
      * @return void
      */
-    private function getUploadsDirectory()
+    public function getUploadsDirectory()
     {
         return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
     }
