@@ -1,7 +1,7 @@
 {% for comment in comments.results %}
     <div class="card">
         <div class="card-header">
-            Publié le {{ comment.createdAt | date("d M Y") }} à {{ comment.createdAt | date("H:i") }} | 
+            Publié le {{ comment.createdAt | format_datetime('full', 'none', locale='fr') }} à {{ comment.createdAt | format_datetime('none', 'short', locale='fr') }} | 
             <a class="link-danger" href="{{ path('post_comment_delete', {'id': comment.id })}}">Supprimer</a>
         </div>
         <div class="card-body d-flex justify-content-start">
