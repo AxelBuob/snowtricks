@@ -3,12 +3,9 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use App\Entity\Image;
 use App\Entity\User;
 use App\Form\User\ChangePassWordType;
 use App\Form\User\UserInformationType;
-
 use App\Repository\ImageRepository;
 use App\Service\FileUploaderService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +20,10 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class UserController extends AbstractController
 {
-
+    /**
+     * Users upload directory
+     * @var string
+     */
     private CONST UPLOAD_DIRECTORY = 'user/';
 
 
@@ -45,12 +45,22 @@ class UserController extends AbstractController
 
     }
 
+    /**
+     * Return the path of users upload directory
+     * @return string
+     */
     private function getUploadsDirectory()
     {
         return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
     }
 
     #[Route('/compte', name: 'user_account')]
+    /**
+     * User profile page
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function index(Request $request): Response
     {
         $form= $this->createForm(UserInformationType::class, $this->getUser());
@@ -77,6 +87,11 @@ class UserController extends AbstractController
     }
 
     #[Route('/compte/supprimer', name: 'user_account_delete')]
+    /**
+     * Delete user account
+     *
+     * @return RedirectResponse
+     */
     public function deleteAccount(): RedirectResponse
     {
         $user = $this->getUser();
@@ -89,14 +104,25 @@ class UserController extends AbstractController
     }
 
     #[Route('/compte/supprimer/image/', name: 'user_image_delete')]
+    /**
+     * Delete user profile image
+     *
+     * @return RedirectResponse
+     */
     public function deleteImage(): RedirectResponse
     {
         $this->imageController->delete($this->getUser(), $this->getUser()->getAvatar(), $this->getUploadsDirectory());
-        $this->addFlash('success', 'Image supprimé avec succès.');
+        $this->addFlash('success', 'Image supprimée avec succès.');
         return $this->redirectToRoute('user_account');
     }
 
     #[Route('/compte/editer/mot-de-passe', name: 'user_password_edit')]
+    /**
+     * Let the user change his password
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function changePassword(Request $request): Response
     {
         $form = $this->createForm(ChangePasswordType::class)->add('save', SubmitType::class, ['label' => 'Modifier mon mot de passe']);
@@ -112,6 +138,14 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * Hash user password
+     *
+     * @param User $user
+     * @param string $password
+     * @param UserPasswordHasherInterface $passwordHasher
+     * @return void
+     */
     private function hashPassword(User $user,string $password, UserPasswordHasherInterface $passwordHasher): void
     {
         $user->setPassword($passwordHasher->hashPassword($user, $password));

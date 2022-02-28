@@ -20,20 +20,12 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Post::class);
     }
 
-    // maybe not used
-    public function loadPosts(int $offset, int $limit)
-    {
-        $qb = $this->createQueryBuilder('t')
-            ->orderBy('t.createdAt', 'DESC')
-            ->getQuery();
-
-        $qb->setFirstResult($offset)
-            ->setMaxResults($limit);
-
-
-        return $qb->getResult();
-    }
-
+    /**
+     * Return paginator object that contains latest posts
+     *
+     * @param integer $page
+     * @return Paginator
+     */
     public function findLatest(int $page = 1): Paginator
     {
         $qb = $this->createQueryBuilder('p')

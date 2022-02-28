@@ -3,12 +3,13 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Post;
 use App\Entity\Video;
 
+/**
+ * Videos management
+ */
 class VideoController extends AbstractController
 {
     public function __construct(EntityManagerInterface $entityManager)
@@ -16,6 +17,13 @@ class VideoController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * Insert a video in database
+     *
+     * @param Post $post
+     * @param Video $video
+     * @return void
+     */
     public function add(Post $post, Video $video)
     {
         $video->setPost($post);
@@ -23,6 +31,13 @@ class VideoController extends AbstractController
         $this->entityManager->persist($video);
     }
 
+    /**
+     * Remove a video from database
+     *
+     * @param Post $post
+     * @param Video $video
+     * @return void
+     */
     public function delete(Post $post, Video $video)
     {
         $this->denyAccessUnlessGranted('EDIT', $video);

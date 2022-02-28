@@ -14,6 +14,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+/**
+ * Images management
+ */
 class ImageController extends AbstractController
 {
 
@@ -30,6 +33,14 @@ class ImageController extends AbstractController
         $this->imageRepository = $imageRepository;
     }
 
+    /**
+     * Delete an image using a fileUploaderService and entityManger
+     *
+     * @param User $user
+     * @param Image $image
+     * @param [type] $upload_directory
+     * @return void
+     */
     public function delete(User $user, Image $image, $upload_directory)
     {
         $this->denyAccessUnlessGranted('EDIT', $image);
@@ -39,6 +50,15 @@ class ImageController extends AbstractController
         $this->entityManager->flush();
     }
 
+    /**
+     * Upload an image using fileUploaderService, also insert into database
+     *
+     * @param User $user
+     * @param [type] $image
+     * @param [type] $upload_directory
+     * @param Post|null $post
+     * @return void
+     */
     public function add(User $user, $image, $upload_directory, Post $post = null)
     {
         $image = $this->fileUploader->upload($image, $upload_directory, $this->slugger);
@@ -53,6 +73,13 @@ class ImageController extends AbstractController
     }
 
     #[Route('/featured_image/{id}', name: 'set_featured_image', methods: ['PUT'], requirements: ['id' => "[1-9]\d*"])]
+    /**
+     * Toggle featured to true or false 
+     *
+     * @param Image $image
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     */
     public function toggleFeatured(Image $image, EntityManagerInterface $entityManager): JsonResponse
     {
         $this->denyAccessUnlessGranted('EDIT', $image);
@@ -66,6 +93,13 @@ class ImageController extends AbstractController
     }
 
     #[Route('/supprimer-figure-image/{id}', name: 'post_image_delete', methods: ["DELETE"])]
+    /**
+     * Delete an post image
+     *
+     * @param Image $image
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function deleteImage(Image $image, Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('EDIT', $image);

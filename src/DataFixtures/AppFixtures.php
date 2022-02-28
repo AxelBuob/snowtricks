@@ -4,25 +4,28 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-
 use App\Entity\User;
 use App\Entity\Post;
 use App\Entity\Category;
 use App\Entity\SiteConfiguration;
 use App\Entity\Comment;
-
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
 {
-
     public function __construct(UserPasswordHasherInterface $userPasswordHasher, SluggerInterface $slugger)
     {
         $this->userPasswordHasher = $userPasswordHasher;
         $this->slugger = $slugger;
     }
 
+    /**
+     * Load entities
+     *
+     * @param ObjectManager $manager
+     * @return void
+     */
     public function load(ObjectManager $manager): void
     {
         $this->loadCategories($manager);
@@ -32,10 +35,15 @@ class AppFixtures extends Fixture
         $this->loadComments($manager);
     }
 
+    /**
+     * Init categories
+     *
+     * @param ObjectManager $manager
+     * @return void
+     */
     private function loadCategories(ObjectManager $manager): void
     {
         $categories = $this->getCategoryData();
-
         for ($i = 0; $i < count($categories); $i++) {
 
             $category = new Category();
@@ -44,10 +52,15 @@ class AppFixtures extends Fixture
             $manager->persist($category);
             $this->addReference($categories[$i]['slug'], $category);
         }
-
         $manager->flush();
     }
 
+    /**
+     * Init users
+     *
+     * @param ObjectManager $manager
+     * @return void
+     */
     private function loadUsers(ObjectManager $manager): void
     {
         foreach ($this->getUserData() as [$username, $firstname, $lastname, $password, $email, $roles]) {
@@ -64,9 +77,14 @@ class AppFixtures extends Fixture
             $this->addReference($email, $user);
         }
         $manager->flush();
-
     }
 
+    /**
+     * Init site configuration
+     *
+     * @param ObjectManager $manager
+     * @return void
+     */
     private function loadSiteConfiguration(ObjectManager $manager): void
     {
         $siteConfiguration = new SiteConfiguration();
@@ -77,12 +95,15 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
     
-    
-
+    /**
+     * Init posts 
+     *
+     * @param ObjectManager $manager
+     * @return void
+     */
     private function loadPosts(ObjectManager $manager): void
     {
         $posts = $this->getPostData();
-
         for($i = 0; $i < count($posts); $i++)
         {
             $post = new Post();
@@ -101,10 +122,15 @@ class AppFixtures extends Fixture
             $this->addReference($posts[$i]['slug'], $post);
             $manager->persist($post);
         }
-
         $manager->flush();
     }
 
+    /**
+     * Init comments
+     *
+     * @param ObjectManager $manager
+     * @return void
+     */
     private function loadComments(ObjectManager $manager): void
     {
         foreach($this->getPostData() as $post)
@@ -122,6 +148,11 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
+    /**
+     * Return users data
+     *
+     * @return array
+     */
     private function getUserData(): array
     {
         return [
@@ -131,6 +162,11 @@ class AppFixtures extends Fixture
         ];
     }
 
+    /**
+     * Return posts data
+     *
+     * @return array
+     */
     public function getPostData(): array
     {
         return [
@@ -148,9 +184,13 @@ class AppFixtures extends Fixture
         ];
     }
 
+    /**
+     * Return categories data
+     *
+     * @return array
+     */
     private function getCategoryData(): array
     {
-
         return [
             [ 'name' => 'Les grabs', 'slug' => 'les-grabs' ],
             [ 'name' => 'Les rotations', 'slug' => 'les-rotations' ],

@@ -3,10 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-
 use App\Form\ResetPassword\ChangePasswordFormType;
 use App\Form\ResetPassword\ResetPasswordRequestFormType;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,14 +41,12 @@ class ResetPasswordController extends AbstractController
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->processSendingPasswordResetEmail(
                 $form->get('email')->getData(),
                 $mailer
             );
         }
-
         return $this->render('reset_password/request.html.twig', [
             'requestForm' => $form->createView(),
         ]);
@@ -83,7 +79,6 @@ class ResetPasswordController extends AbstractController
             // We store the token in session and remove it from the URL, to avoid the URL being
             // loaded in a browser and potentially leaking the token to 3rd party JavaScript.
             $this->storeTokenInSession($token);
-
             return $this->redirectToRoute('app_reset_password');
         }
 
@@ -99,7 +94,6 @@ class ResetPasswordController extends AbstractController
                 'Un problème est survenus lors du traitement de votre requête, merci de contacter l\'administrateur du site. - %s',
                 $e->getReason()
             ));
-
             return $this->redirectToRoute('app_forgot_password_request');
         }
 
@@ -122,7 +116,6 @@ class ResetPasswordController extends AbstractController
 
             // The session is cleaned up after the password has been changed.
             $this->cleanSessionAfterReset();
-
             return $this->redirectToRoute('post_index');
         }
 
