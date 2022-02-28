@@ -16,7 +16,7 @@ class Video
     #[ORM\Column(type: 'string', length: 255)]
     private $src;
 
-    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'videos' )]
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'videos', cascade: ['persist'])]
     private $post;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'videos')]

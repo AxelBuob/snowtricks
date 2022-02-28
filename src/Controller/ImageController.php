@@ -43,13 +43,14 @@ class ImageController extends AbstractController
     {
         $image = $this->fileUploader->upload($image, $upload_directory, $this->slugger);
 
-        $user->setAvatar($image);
+        //$user->setAvatar($image);
         $image->setOwner($user);
         if($post)
         {
-            $image->setPost($post);
+            $post->addImage($image);
+            
         }
-        $this->entityManager->flush();
+        $this->entityManager->persist($image);
         return $image;
     }
 
