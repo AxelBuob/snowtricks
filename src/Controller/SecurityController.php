@@ -5,29 +5,25 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\Mime\Address;
-
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Security\LoginFormAuthenticator;
-
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use App\Security\EmailVerifier;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-
 use App\Form\Security\RegistrationFormType;
 
 
+/**
+ * Authentification
+ */
 class SecurityController extends AbstractController
-
 {
     private EmailVerifier $emailVerifier;
 
@@ -36,8 +32,12 @@ class SecurityController extends AbstractController
         $this->emailVerifier = $emailVerifier;
     }
 
+    #[Route("/connexion", name: "security_login")]
     /**
-     * @Route("/connexion", name="security_login")
+     * Logout page
+     *
+     * @param AuthenticationUtils $authenticationUtils
+     * @return Response
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -58,12 +58,27 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/deconnexion", name: "security_logout")]
+    /**
+     * Login page
+     *
+     * @return void
+     */
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
     #[Route('/inscription', name: 'security_register')]
+    /**
+     * Register page
+     *
+     * @param Request $request
+     * @param UserPasswordHasherInterface $userPasswordHasher
+     * @param UserAuthenticatorInterface $userAuthenticator
+     * @param LoginFormAuthenticator $authenticator
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, LoginFormAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
     {
         if ($this->getUser()) {
@@ -114,10 +129,15 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/email-verification', name: 'security_verify_email')]
+    /**
+     * Email verification
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function verifyUserEmail(Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         // validate email confirmation link, sets User::isVerified=true and persists
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
@@ -127,7 +147,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        $this->addFlash('success', 'Votre adresse email a bien été vérifié.');
+        $this->addFlash('success', 'Votre adresse email a bien été vérifiée.');
 
         return $this->redirectToRoute('user_account');
     }

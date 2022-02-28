@@ -21,6 +21,13 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
+    /**
+     * Return paginator object that contains latest comments
+     *
+     * @param integer $id
+     * @param integer $page
+     * @return Paginator
+     */
     public function findLatest(int $id, int $page = 1): Paginator
     {
         $qb = $this->createQueryBuilder('c')
@@ -30,6 +37,7 @@ class CommentRepository extends ServiceEntityRepository
         ;
         return (new Paginator($qb))->paginate($page);
     }
+    
     // /**
     //  * @return Comment[] Returns an array of Comment objects
     //  */

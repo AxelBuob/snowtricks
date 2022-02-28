@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-namespace App\Controller;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +13,21 @@ use App\Entity\Comment;
 use App\Form\Comment\CommentType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * Manage comments
+ */
 class CommentController extends AbstractController
 {
     #[Route('/figure/{slug}/commentaire/ajouter', methods: ['POST'], name: 'post_comment_add')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    /**
+     * Insert a comment
+     *
+     * @param Request $request
+     * @param Post $post
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     public function commentNew(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
         $comment = new Comment();
@@ -41,7 +50,14 @@ class CommentController extends AbstractController
         ]);
     }
 
-    #[Route('/commentaire/{id}/editer', name: 'post_comment_delete')]
+    #[Route('/commentaire/{id}/supprimer', name: 'post_comment_delete')]
+    /**
+     * Remove a comment
+     *
+     * @param Comment $comment
+     * @param EntityManagerInterface $entityManager
+     * @return RedirectResponse
+     */
     public function commentDelete(Comment $comment, EntityManagerInterface $entityManager): RedirectResponse
     {
         $this->denyAccessUnlessGranted('EDIT', $comment);

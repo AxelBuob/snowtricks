@@ -13,9 +13,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
+
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
+/**
+ * Post management
+ */
 class PostController extends AbstractController
 {
+    /**
+     * Post image directory
+     * @var string
+     */
     private const UPLOAD_DIRECTORY = 'post/';
 
     public function __construct(
@@ -31,12 +39,23 @@ class PostController extends AbstractController
         $this->videoController = $videoController;
     }
 
+    /**
+     * Return the path of post images directory
+     *
+     * @return void
+     */
     private function getUploadsDirectory()
     {
         return $this->getParameter('uploads_directory') . self::UPLOAD_DIRECTORY;
     }
 
     #[Route('/ajouter-figure', name: 'post_add')]
+    /**
+     * Add post
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function add(Request $request): Response
     {
 
@@ -78,6 +97,13 @@ class PostController extends AbstractController
     }
 
     #[Route('/editer-figure/{slug}', name: 'post_edit')]
+    /**
+     * Edit a post
+     *
+     * @param Post $post
+     * @param Request $request
+     * @return Response
+     */
     public function edit(Post $post, Request $request): Response
     {
         $this->denyAccessUnlessGranted('EDIT', $post);
@@ -124,6 +150,12 @@ class PostController extends AbstractController
     }
 
     #[Route('/supprimer-figure/{id}', name: 'post_delete')]
+    /**
+     * Delete a post
+     *
+     * @param Post $post
+     * @return Response
+     */
     public function delete(Post $post): Response
     {
         $this->denyAccessUnlessGranted('EDIT', $post); 
@@ -137,7 +169,7 @@ class PostController extends AbstractController
         }
         $this->entityManager->remove($post);
         $this->entityManager->flush();
-        $this->addFlash('success', 'L\'article  a bien été supprimé.');
+        $this->addFlash('success', 'L\'article a bien été supprimé.');
         return $this->RedirectToRoute('post_index');
     }
 

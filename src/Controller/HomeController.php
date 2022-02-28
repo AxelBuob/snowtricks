@@ -12,6 +12,9 @@ use App\Entity\SiteConfiguration;
 use App\Repository\ImageRepository;
 use App\Repository\SiteConfigurationRepository;
 
+/**
+ * Homepage
+ */
 class HomeController extends AbstractController
 {
 
@@ -20,9 +23,14 @@ class HomeController extends AbstractController
         $this->siteConfigurationRepository = $siteConfigurationRepository;
     }
 
-    #[
-        Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'post_index')
-    ]
+    #[Route('/', defaults: ['page' => '1'], methods: ['GET'], name: 'post_index')]
+    /**
+     * Index page, list all posts paginated
+     *
+     * @param integer $page
+     * @param PostRepository $postRepository
+     * @return Response
+     */
     public function index(int $page, PostRepository $postRepository): Response
     {
         $posts = $postRepository->findLatest($page);
@@ -38,9 +46,14 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[
-        Route('/page/{page}',methods: ['GET'], name: 'post_index_more', requirements: ['page' => '\d+'])
-    ]
+    #[Route('/page/{page}',methods: ['GET'], name: 'post_index_more', requirements: ['page' => '\d+'])]
+    /**
+     * Post pagination, called in Ajax
+     *
+     * @param PostRepository $postRepository
+     * @param integer $page
+     * @return void
+     */
     public function loadMorePosts(PostRepository $postRepository, $page = 5)
     {
         $posts = $postRepository->findLatest($page);
@@ -51,9 +64,16 @@ class HomeController extends AbstractController
     }
 
 
-    #[
-        Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"])
-    ]
+    #[Route('/figure/{slug}', defaults: ['page' => '1'],  methods: ['GET'], name: 'post_show', requirements: ['slug' => "[a-z0-9\-]*"])]
+    /**
+     * Post show, comments are paginated
+     *
+     * @param Post $post
+     * @param integer $page
+     * @param CommentRepository $commentRepository
+     * @param ImageRepository $imageRepository
+     * @return Response
+     */
     public function show(Post $post, int $page, CommentRepository $commentRepository, ImageRepository $imageRepository): Response
     {
         if (!$post) {
@@ -80,6 +100,14 @@ class HomeController extends AbstractController
     #[
         Route('/figure/{slug}/page/{page}', methods: ['GET'], name: 'post_show_more', requirements: ['slug' => "[a-z0-9\-]*", 'page' => "[1-9]\d*"]),
     ]
+    /**
+     * Comments pagination, called in Ajax
+     *
+     * @param Post $post
+     * @param CommentRepository $commentRepository
+     * @param integer $page
+     * @return void
+     */
     public function loadMoreComments(Post $post, CommentRepository $commentRepository, $page = 5)
     {
         $comments = $commentRepository->findLatest($post->getId(), $page);
@@ -88,11 +116,21 @@ class HomeController extends AbstractController
         ]);
     }
 
+    /**
+     * Return site configuration, litle, description, author, logo
+     *
+     * @return SiteConfiguration
+     */
     private function getSiteConfiguration(): SiteConfiguration
     {
         return $this->siteConfigurationRepository->getSiteConfiguration();
     }
 
+    /**
+     * Inject siteConfiguration variables into header
+     *
+     * @return void
+     */
     public function getHeader()
     {
         return $this->render('header.html.twig', [
@@ -100,6 +138,11 @@ class HomeController extends AbstractController
         ]);
     }
 
+    /**
+     * Inject siteConfiguration variables into footer
+     *
+     * @return void
+     */
     public function getFooter()
     {
         return $this->render('footer.html.twig', [

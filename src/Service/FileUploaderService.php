@@ -10,15 +10,19 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class FileUploaderService
 {
-
-
-    private $file_system;
-
     public function __construct()
     {
         $this->file_system = new Filesystem();
     }
 
+    /**
+     * Upload a file on the server
+     *
+     * @param UploadedFile $file
+     * @param [type] $targetDirectory
+     * @param SluggerInterface $slugger
+     * @return void
+     */
     public function upload(UploadedFile $file, $targetDirectory, SluggerInterface $slugger)
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -36,11 +40,15 @@ class FileUploaderService
         return $image;
     }
 
-
+    /**
+     * Remove a file from on the server
+     *
+     * @param [type] $file
+     * @return void
+     */
     public function remove($file): void
     {
         try {
-
             if ($this->file_system->exists($file)) {
                 if (!$this->file_system->remove($file)) {
                     throw new FileException('Cannot remove the file');
@@ -52,8 +60,4 @@ class FileUploaderService
             $e->getMessage();
         }
     }
-
-
-
-
 }
