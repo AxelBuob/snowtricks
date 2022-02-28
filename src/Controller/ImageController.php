@@ -42,8 +42,6 @@ class ImageController extends AbstractController
     public function add(User $user, $image, $upload_directory, Post $post = null)
     {
         $image = $this->fileUploader->upload($image, $upload_directory, $this->slugger);
-
-        //$user->setAvatar($image);
         $image->setOwner($user);
         if($post)
         {
