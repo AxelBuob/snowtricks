@@ -41,7 +41,7 @@ class CommentVoter extends Voter
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case 'POST_EDIT':
+            case 'EDIT':
                 return $user === $subject->getUser();
         }
 
