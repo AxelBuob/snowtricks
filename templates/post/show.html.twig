@@ -38,13 +38,13 @@
     <div>
         <p>
             {% if post.updatedAt is defined and post.updatedAt is not null %}
-                Mis à jour le <b>{{ post.updatedAt | date("d M Y") }}</b>
-                à <b>{{ post.updatedAt | date('H:i') }}</b>
+                Mis à jour le <b>{{ post.updatedAt | format_datetime('full', 'none', locale='fr') }}</b>
+                à <b>{{ post.updatedAt | format_datetime('none', 'short', locale='fr') }}</b>
             {% else %}
-                Publié le <b>{{ post.createdAt | date("d M Y") }}</b>
-                à <b>{{ post.createdAt | date('H:i') }}</b>
+                Publié le <b>{{ post.createdAt | format_datetime('full', 'none', locale='fr') }}</b>
+                à <b>{{ post.createdAt | format_datetime('none', 'short', locale='fr') }}</b>
             {% endif %}
-            par <em>{{ post.user.fullName }}</em> 
+            par <strong>{{ post.user.fullName }}</strong> 
             dans la catégorie <strong>{{ post.category.name }}</strong>
         </p>
     </div>
