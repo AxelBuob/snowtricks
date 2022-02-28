@@ -62,7 +62,8 @@ class UserController extends AbstractController
                 {
                     $this->imageController->delete($this->getUser(), $this->getUser()->getAvatar(), $this->getUploadsDirectory());               
                 }
-                $this->imageController->add($this->getUser(), $form->get('image')->getData(), $this->getUploadsDirectory());        
+                $image = $this->imageController->add($this->getUser(), $form->get('image')->getData(), $this->getUploadsDirectory());        
+                $this->getUser()->setAvatar($image);
             }
             $this->entityManager->flush();
             $this->addFlash('success', 'Compte mis à jour avec succès.');

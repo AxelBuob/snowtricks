@@ -47,6 +47,8 @@ class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $post->setSlug($this->slugger->slug($form->get('name')->getData())->lower());
+            
             foreach($post->getVideos() as $video)
             {
                 $this->videoController->add($post, $video);
@@ -62,7 +64,6 @@ class PostController extends AbstractController
 
             $post->setCreatedAt(new \DateTime());
             $post->setUser($this->getUser());
-            $post->setSlug($this->slugger->slug($form->get('name')->getData())->lower());
 
             $this->entityManager->persist($post);
             $this->entityManager->flush();
